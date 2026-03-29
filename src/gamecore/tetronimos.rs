@@ -104,6 +104,6 @@ impl Tetronimo {
         if (self.current_mask_idx + 1) == self.blocks_masks.len() { self.current_mask_idx = 0 }
         else { self.current_mask_idx += 1 }
     } 
-    pub fn get_mask<'a>(&self) -> &Vec<Coord> { &self.blocks_masks[self.current_mask_idx]  }
+    pub fn get_mask<'a>(&'a self) -> &'a Vec<Coord> { &self.blocks_masks[self.current_mask_idx] }
 }
 
