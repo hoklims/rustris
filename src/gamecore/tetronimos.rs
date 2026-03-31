@@ -1,12 +1,16 @@
 use std::vec::Vec;
-use macroquad::color::{ RED, BLUE, MAGENTA, BROWN, LIGHTGRAY, PINK, GREEN, Color };
+use strum_macros::EnumIter;
+use macroquad::color::{ RED, BLUE, MAGENTA, LIGHTGRAY, PINK, GREEN, Color };
 
+#[derive(EnumIter)]
 pub enum TetronimoType { I, O, T, L, J, Z, S }
 
-struct Coord {
+#[derive(Debug)]
+pub struct Coord {
     x: i8,
     y: i8
 }
+#[derive(Debug)]
 pub struct Tetronimo {
     blocks_masks: Vec<Vec<Coord>>,
     current_mask_idx: usize,
@@ -14,12 +18,14 @@ pub struct Tetronimo {
 }
 
 impl Tetronimo {
+
     pub fn new(t_type: TetronimoType) -> Tetronimo {
+
         match t_type {
 
             TetronimoType::O => { Tetronimo { blocks_masks: vec![vec![Coord{ x:  0, y: -1 }, 
-                                                                      Coord{ x: -1, y: -1 }, 
-                                                                      Coord{ x: -1, y:  0 }, 
+                                                                      Coord{ x:  1, y: -1 }, 
+                                                                      Coord{ x:  1, y:  0 }, 
                                                                       Coord{ x:  0, y:  0 }]],
                                               current_mask_idx: 0,
                                               color: BLUE }}
@@ -95,17 +101,28 @@ impl Tetronimo {
                                                                       Coord{ x: 0, y: -1 },
                                                                       Coord{ x: 0, y: -2 },
                                                                       Coord{ x: 1, y:  1 }]],
-                                            current_mask_idx: 0,
-                                            color: PINK }}
+                                              current_mask_idx: 0,
+                                              color: PINK }}
 
         }
     }
+
     pub fn update_mask(&mut self) -> () {
         if (self.current_mask_idx + 1) == self.blocks_masks.len() 
-            { self.current_mask_idx = 0 }
+            { self.current_mask_idx  = 0 }
         else 
             { self.current_mask_idx += 1 }
     } 
-    pub fn get_mask<'a>(&'a self) -> &'a Vec<Coord> { &self.blocks_masks[self.current_mask_idx] }
+
+    pub fn get_mask<'a>(&'a self) -> &'a Vec<Coord> 
+        { &self.blocks_masks[self.current_mask_idx] }
+
+    pub fn get_next_mask<'a>(&'a self) -> &'a Vec<Coord> {
+        if (self.current_mask_idx + 1) == self.blocks_masks.len() 
+            { &self.blocks_masks[0] }
+        else 
+            { &self.blocks_masks[self.current_mask_idx + 1] }
+
+    }
 }
 
