@@ -6,3 +6,5 @@ edition = "2024"
 [dependencies]
 macroquad = "0.4.14"
 rand = "0.8"
+strum = "0.28.0"
+strum_macros = "0.28.0"
