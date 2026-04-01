@@ -5,16 +5,39 @@ use macroquad::color::{ RED, BLUE, MAGENTA, LIGHTGRAY, PINK, GREEN, Color };
 #[derive(EnumIter)]
 pub enum TetronimoType { I, O, T, L, J, Z, S }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Coord {
     x: i8,
     y: i8
 }
+
+impl std::ops::Add for Coord {
+    type Output = Coord;
+    fn add(self, rhs: Self) -> Self::Output {
+        Coord{
+            x: self.x + rhs.x,
+            y: self.y + rhs.y
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Tetronimo {
     blocks_masks: Vec<Vec<Coord>>,
     current_mask_idx: usize,
     color: Color,
+}
+
+impl Clone for Tetronimo {
+
+    fn clone(&self) -> Self {
+        
+        Tetronimo { blocks_masks: self.blocks_masks.to_vec(),
+                    current_mask_idx: self.current_mask_idx,
+                    color: self.color }
+
+    }
+
 }
 
 impl Tetronimo {
