@@ -2,13 +2,15 @@ use std::vec::Vec;
 use strum_macros::EnumIter;
 use macroquad::color::{ RED, BLUE, MAGENTA, LIGHTGRAY, PINK, GREEN, Color };
 
+use crate::gamecore::game_grid::{ GRID_HEIGHT, GRID_WIDTH };
+
 #[derive(EnumIter)]
 pub enum TetronimoType { I, O, T, L, J, Z, S }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Coord {
-    x: i8,
-    y: i8
+    pub x: i8,
+    pub y: i8
 }
 
 impl std::ops::Add for Coord {
@@ -23,11 +25,17 @@ impl std::ops::Add for Coord {
     }
 }
 
+impl std::ops::AddAssign for Coord {
+    fn add_assign(&mut self, rhs: Self) {
+        self.x += rhs.x; self.y += rhs.y    
+    }    
+}
+
 #[derive(Debug)]
 pub struct Tetronimo {
     blocks_masks: Vec<[Coord; 4]>,
     current_mask_idx: usize,
-    color: Color,
+    pub color: Color,
 }
 
 impl Clone for Tetronimo {
@@ -149,5 +157,19 @@ impl Tetronimo {
             { &self.blocks_masks[self.current_mask_idx + 1] }
 
     }
+
+    pub fn get_width(&self) -> i8 
+        { self.get_mask().iter().map(|x| x.x).max().unwrap() }
+
+    pub fn get_height(&self) -> i8 
+        { self.get_mask().iter().map(|x| x.y).max().unwrap() }
+
+    pub fn get_init_coord(&self) -> Coord {
+        let tet_height: i8 = self.get_height();
+        let tet_width: i8 = self.get_width(); 
+        Coord { x: (GRID_WIDTH - tet_width) / 2, 
+                y:  GRID_HEIGHT - tet_height }
+    }
+
 }
 
