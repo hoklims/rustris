@@ -1,11 +1,13 @@
 use std::vec::Vec;
 use strum_macros::EnumIter;
-use macroquad::color::{ RED, BLUE, MAGENTA, LIGHTGRAY, PINK, GREEN, Color };
+use macroquad::color::{ RED, BLUE, MAGENTA, LIGHTGRAY, GREEN, Color };
 
 use crate::gamecore::game_grid::{ GRID_HEIGHT, GRID_WIDTH };
 
 #[derive(EnumIter)]
 pub enum TetronimoType { I, O, T, L, J, Z, S }
+
+pub const CYAN: Color = Color::new(0.0, 1.0, 1.0, 0.0);
 
 #[derive(Debug, Clone, Copy)]
 pub struct Coord {
@@ -156,7 +158,7 @@ impl Tetronimo {
                 
                 Tetronimo { blocks_masks: blocks_masks,
                             current_mask_idx: 0,
-                            color: PINK,
+                            color: CYAN,
                             mask: mask,
                             next_mask: next_mask }}
 
