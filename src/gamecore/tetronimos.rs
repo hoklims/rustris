@@ -1,6 +1,6 @@
 use std::vec::Vec;
 use strum_macros::EnumIter;
-use macroquad::color::{ RED, BLUE, MAGENTA, LIGHTGRAY, GREEN, Color };
+use macroquad::color::{ BLUE, GREEN, LIGHTGRAY, MAGENTA, RED, YELLOW, Color };
 
 use crate::gamecore::game_grid::{ GRID_HEIGHT, GRID_WIDTH };
 
@@ -78,11 +78,12 @@ impl Tetronimo {
                                                          Coord{ x:  1, y: 0 }, 
                                                          Coord{ x:  1, y: 1 }, 
                                                          Coord{ x:  0, y: 1 }]];
+                                                         
                 let (mask, next_mask) = (blocks_mask[0], blocks_mask[0]);
                 
                 Tetronimo { blocks_masks: blocks_mask,
                             current_mask_idx: 0,
-                            color: BLUE,
+                            color: CYAN,
                             mask: mask,
                             next_mask: next_mask}}
 
@@ -120,7 +121,7 @@ impl Tetronimo {
                 
                 Tetronimo { blocks_masks: blocks_masks,
                             current_mask_idx: 0,
-                            color: LIGHTGRAY,
+                            color: MAGENTA,
                             mask: mask,
                             next_mask: next_mask }}
 
@@ -139,7 +140,7 @@ impl Tetronimo {
                 
                 Tetronimo { blocks_masks: blocks_masks,
                             current_mask_idx: 0,
-                            color: GREEN,
+                            color: BLUE,
                             mask: mask,
                             next_mask: next_mask }}
 
@@ -158,7 +159,7 @@ impl Tetronimo {
                 
                 Tetronimo { blocks_masks: blocks_masks,
                             current_mask_idx: 0,
-                            color: CYAN,
+                            color: GREEN,
                             mask: mask,
                             next_mask: next_mask }}
 
@@ -177,7 +178,7 @@ impl Tetronimo {
                 
                 Tetronimo { blocks_masks: blocks_masks,
                             current_mask_idx: 0,
-                            color: MAGENTA,
+                            color: YELLOW,
                             mask: mask,
                             next_mask: next_mask }}
 
@@ -204,7 +205,7 @@ impl Tetronimo {
                 
                 Tetronimo { blocks_masks: blocks_masks,
                             current_mask_idx: 0,
-                            color: PINK,
+                            color: LIGHTGRAY,
                             mask: mask,
                             next_mask: next_mask }}
         }
