@@ -40,9 +40,9 @@ impl GameGrid {
             grid: grid,
             tet_coord: tet_init_coord
         }
-        
     }
-    fn renew_current_tetronimo(&mut self) -> Result<(), String> {
+
+    pub fn renew_current_tetronimo(&mut self) -> Result<(), String> {
         self.current_tetronimo = self.tetronimos.choose().unwrap().clone();
         self.tet_coord = self.current_tetronimo.get_init_coord();
         
@@ -50,16 +50,16 @@ impl GameGrid {
                                          &self.current_tetronimo.mask,
                                          self.tet_coord,
                                          &self.grid)?
-            { Err(String::from("cannot allocate new tetronimo")) }
+            { Err("cannot allocate new tetronimo".to_string()) }
+
         else { Ok(()) }
     }
 
-    fn fix_current_tetromino(&mut self) -> () {
-        let tet_coord = self.current_tetronimo.mask.iter().map(|x| *x + self.tet_coord);
+    pub fn fix_current_tetromino(&mut self) -> () {
+        let tet_coord = self.current_tetronimo.mask.iter().map(|x: &Coord| *x + self.tet_coord);
         for coord in tet_coord {
             self.grid[coord.x as usize][coord.y as usize] = Some(self.current_tetronimo.color);
         }
-        //self.renew_current_tetronimo();
     }
 
     fn is_coord_in_grid(coord: Coord) -> bool {
@@ -87,11 +87,24 @@ impl GameGrid {
                                                           &self.current_tetronimo.mask,
                                                           self.tet_coord,
                                                           &self.grid)?;
-        if is_legal {
-            self.tet_coord += coord_change ;
-            Ok(())
+
+        match is_legal {
+            true => { self.tet_coord += coord_change ;
+                      Ok(()) }
+            false => Err("move is not possible".to_string())
         }
-        else { Err(String::from("move is not possible")) }
+    }
+
+    pub fn move_tet_down(&mut self) -> Result<(), String> {
+        self.move_tet(Coord { x: 0, y: -1 })
+    }
+
+    pub fn move_tet_left(&mut self) -> Result<(), String> {
+        self.move_tet(Coord { x: -1, y: 0 })
+    }
+
+    pub fn move_tet_right(&mut self) -> Result<(), String> {
+        self.move_tet(Coord { x: 1, y: 0 })
     }
 
     fn can_tet_change(&self) -> Result<bool, String> {
@@ -109,17 +122,41 @@ impl GameGrid {
         self.grid[(GRID_HEIGHT - 1) as usize] = [None; GRID_WIDTH as usize]
     }
 
-    fn remove_full_lines(&mut self) -> () {
+    pub fn remove_full_lines(&mut self) -> usize {
 
         let mut line_nb: usize = 0;
+
+        let mut nb_removed_lines: usize = 0;
 
         while line_nb < (GRID_HEIGHT - 1) as usize {
 
             if self.grid[line_nb].into_iter().all(|x: Option<Color>| x.is_some()) {
                 self.remove_line(line_nb);
+                nb_removed_lines += 1;
             }
             else { line_nb += 1 }
         }
+        nb_removed_lines
+    }
+
+    fn dump_tet(&mut self) -> Result<(), String> {
+    
+        let mut max_possible_down_move: Coord = Coord { x: 0, y: 0 };
+
+        loop { 
+               let new_coord: Coord = max_possible_down_move + Coord{ x: 0, y: -1 };
+               if Self::is_move_and_mask_legal(new_coord,
+                                               &self.current_tetronimo.mask,
+                                               self.tet_coord,
+                                               &self.grid)?
+                    { max_possible_down_move = new_coord; }
+               else { break }
+        }
+
+        self.move_tet(max_possible_down_move)?;
+        
+        Ok(())
+
     }
 
 }
