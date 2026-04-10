@@ -1,8 +1,8 @@
-use std::vec::Vec;
 use strum_macros::EnumIter;
 use macroquad::color::{ BLUE, GREEN, LIGHTGRAY, MAGENTA, RED, YELLOW, Color };
 
 use crate::gamecore::game_grid::{ GRID_HEIGHT, GRID_WIDTH };
+use crate::gamecore::masks::{ MASKS_I, MASKS_J, MASKS_L, MASKS_O, MASKS_S, MASKS_T, MASKS_Z } ;
 
 #[derive(EnumIter)]
 pub enum TetronimoType { I, O, T, L, J, Z, S }
@@ -43,27 +43,13 @@ impl std::ops::Add for &Coord {
 
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Tetronimo {
-    blocks_masks: Vec<[Coord; 4]>,
+    blocks_masks: &'static[[Coord; 4]],
     current_mask_idx: usize,
     pub color: Color,
-    pub mask: [Coord; 4],
-    pub next_mask: [Coord; 4]
-}
-
-impl Clone for Tetronimo {
-
-    fn clone(&self) -> Self {
-        
-        Tetronimo { blocks_masks: self.blocks_masks.clone(),
-                    current_mask_idx: self.current_mask_idx,
-                    color: self.color,
-                    mask: self.mask.clone(),
-                    next_mask: self.next_mask.clone() }
-
-    }
-
+    pub mask: &'static[Coord; 4],
+    pub next_mask: &'static[Coord; 4]
 }
 
 impl Tetronimo {
@@ -73,141 +59,60 @@ impl Tetronimo {
         match t_type {
 
             TetronimoType::O => { 
-
-                let blocks_mask: Vec<[Coord; 4]> = vec![[Coord{ x:  0, y: 0 }, 
-                                                         Coord{ x:  1, y: 0 }, 
-                                                         Coord{ x:  1, y: 1 }, 
-                                                         Coord{ x:  0, y: 1 }]];
-                                                         
-                let (mask, next_mask) = (blocks_mask[0], blocks_mask[0]);
                 
-                Tetronimo { blocks_masks: blocks_mask,
+                Tetronimo { blocks_masks: MASKS_O,
                             current_mask_idx: 0,
                             color: CYAN,
-                            mask: mask,
-                            next_mask: next_mask}}
+                            mask: &MASKS_O[0],
+                            next_mask: &MASKS_O[0]}}
 
             TetronimoType::I => { 
-                
-                let blocks_masks: Vec<[Coord; 4]> = vec![[Coord{ x: 0, y: 0 }, 
-                                                         Coord{ x: 0, y: 1 }, 
-                                                         Coord{ x: 0, y: 2 }, 
-                                                         Coord{ x: 0, y: 3 }],
-                                                        [Coord{ x: 0, y: 0 },
-                                                         Coord{ x: 1, y: 0 },
-                                                         Coord{ x: 2, y: 0 },
-                                                         Coord{ x: 3, y: 0 }]];
 
-                let (mask, next_mask) = (blocks_masks[0], blocks_masks[1]);
-
-                Tetronimo { blocks_masks: blocks_masks,
+                Tetronimo { blocks_masks: MASKS_I,
                             current_mask_idx: 0,
                             color: RED,
-                            mask: mask,
-                            next_mask: next_mask }}
+                            mask: &MASKS_I[0],
+                            next_mask: &MASKS_I[1] }}
 
-            TetronimoType::J => { 
+            TetronimoType::J => {                                
                 
-                let blocks_masks: Vec<[Coord; 4]> =  vec![[Coord{ x: 0, y: 0 },
-                                                           Coord{ x: 1, y: 2 },
-                                                           Coord{ x: 1, y: 1 },
-                                                           Coord{ x: 1, y: 0 }],
-                                                          [Coord{ x: 0, y: 2 },
-                                                           Coord{ x: 1, y: 2 },
-                                                           Coord{ x: 1, y: 1 },
-                                                           Coord{ x: 1, y: 0 }]];
-
-                let (mask, next_mask) = (blocks_masks[0], blocks_masks[1]);                                           
-                
-                Tetronimo { blocks_masks: blocks_masks,
+                Tetronimo { blocks_masks: MASKS_J,
                             current_mask_idx: 0,
                             color: MAGENTA,
-                            mask: mask,
-                            next_mask: next_mask }}
+                            mask: &MASKS_J[0],
+                            next_mask: &MASKS_J[1] }}
 
             TetronimoType::S => { 
                 
-                let blocks_masks: Vec<[Coord; 4]> = vec![[Coord{ x: 0, y: 0 },
-                                                          Coord{ x: 1, y: 1 },
-                                                          Coord{ x: 1, y: 0 },
-                                                          Coord{ x: 2, y: 1 }],
-                                                         [Coord{ x: 0, y: 2 },
-                                                          Coord{ x: 0, y: 1 },
-                                                          Coord{ x: 1, y: 1 },
-                                                          Coord{ x: 1, y: 0 }]];
-
-                let (mask, next_mask) = (blocks_masks[0], blocks_masks[1]); 
-                
-                Tetronimo { blocks_masks: blocks_masks,
+                Tetronimo { blocks_masks: MASKS_S,
                             current_mask_idx: 0,
                             color: BLUE,
-                            mask: mask,
-                            next_mask: next_mask }}
+                            mask: &MASKS_S[0],
+                            next_mask: &MASKS_S[1] }}
 
             TetronimoType::Z => { 
                 
-                let blocks_masks: Vec<[Coord; 4]> = vec![[Coord{ x: 0, y: 1 },
-                                                          Coord{ x: 1, y: 1 },
-                                                          Coord{ x: 1, y: 0 },
-                                                          Coord{ x: 2, y: 0 }],
-                                                         [Coord{ x: 1, y: 2 },
-                                                          Coord{ x: 0, y: 1 },
-                                                          Coord{ x: 1, y: 1 },
-                                                          Coord{ x: 0, y: 0 }]];
-
-                let (mask, next_mask) = (blocks_masks[0], blocks_masks[1]); 
-                
-                Tetronimo { blocks_masks: blocks_masks,
+                Tetronimo { blocks_masks: MASKS_Z,
                             current_mask_idx: 0,
                             color: GREEN,
-                            mask: mask,
-                            next_mask: next_mask }}
+                            mask: &MASKS_Z[0],
+                            next_mask: &MASKS_Z[1] }}
 
             TetronimoType::L => { 
                 
-                let blocks_masks: Vec<[Coord; 4]> = vec![[Coord{ x: 0, y: 2 },
-                                                          Coord{ x: 0, y: 1 },
-                                                          Coord{ x: 0, y: 0 },
-                                                          Coord{ x: 1, y: 0 }],
-                                                         [Coord{ x: 0, y: 0 },
-                                                          Coord{ x: 1, y: 0 },
-                                                          Coord{ x: 2, y: 0 },
-                                                          Coord{ x: 2, y: 1 }]];
-
-                let (mask, next_mask) = (blocks_masks[0], blocks_masks[1]);
-                
-                Tetronimo { blocks_masks: blocks_masks,
+                Tetronimo { blocks_masks: MASKS_L,
                             current_mask_idx: 0,
                             color: YELLOW,
-                            mask: mask,
-                            next_mask: next_mask }}
+                            mask: &MASKS_L[0],
+                            next_mask: &MASKS_L[1] }}
 
             TetronimoType::T => { 
                 
-                let blocks_masks: Vec<[Coord; 4]> = vec![[Coord{ x: 0, y: 0 },
-                                                          Coord{ x: 1, y: 0 },
-                                                          Coord{ x: 2, y: 0 },
-                                                          Coord{ x: 1, y: 1 }],
-                                                         [Coord{ x: 1, y: 2 },
-                                                          Coord{ x: 1, y: 1 },
-                                                          Coord{ x: 1, y: 0 },
-                                                          Coord{ x: 0, y: 1 }],
-                                                         [Coord{ x: 0, y: 1 },
-                                                          Coord{ x: 1, y: 1 },
-                                                          Coord{ x: 2, y: 1 },
-                                                          Coord{ x: 1, y: 0 }],
-                                                         [Coord{ x: 0, y: 0 },
-                                                          Coord{ x: 0, y: 1 },
-                                                          Coord{ x: 0, y: 2 },
-                                                          Coord{ x: 1, y: 1 }]];
-
-                let (mask, next_mask) = (blocks_masks[0], blocks_masks[1]);
-                
-                Tetronimo { blocks_masks: blocks_masks,
+                Tetronimo { blocks_masks: MASKS_T,
                             current_mask_idx: 0,
                             color: LIGHTGRAY,
-                            mask: mask,
-                            next_mask: next_mask }}
+                            mask: &MASKS_T[0],
+                            next_mask: &MASKS_T[1] }}
         }
     }
 
@@ -218,12 +123,12 @@ impl Tetronimo {
         else 
             { self.current_mask_idx += 1; }
 
-        self.mask = self.blocks_masks[self.current_mask_idx];
+        self.mask = &self.blocks_masks[self.current_mask_idx];
 
         if (self.current_mask_idx + 1) == self.blocks_masks.len() 
-            { self.next_mask = self.blocks_masks[0]; }
+            { self.next_mask = &self.blocks_masks[0]; }
         else 
-            { self.next_mask = self.blocks_masks[self.current_mask_idx + 1] }
+            { self.next_mask = &self.blocks_masks[self.current_mask_idx + 1] }
 
     } 
 
