@@ -9,6 +9,9 @@ pub const GRID_WIDTH: i8 = 10;
 
 type Grid = Box<[[Option<Color>; GRID_WIDTH as usize]; GRID_HEIGHT as usize]>;
 
+#[derive(PartialEq, Eq)]
+pub enum GridError { CannotAllocateNewTet, ImpossibleMove, TetOutsideGrid }
+
 pub struct GameGrid {
 
     tetronimos: Vec<Tetronimo>,
@@ -42,7 +45,7 @@ impl GameGrid {
         }
     }
 
-    pub fn renew_current_tetronimo(&mut self) -> Result<(), String> {
+    pub fn renew_current_tetronimo(&mut self) -> Result<(), GridError> {
         self.current_tetronimo = self.tetronimos.choose().unwrap().clone();
         self.tet_coord = self.current_tetronimo.get_init_coord();
         
@@ -50,7 +53,7 @@ impl GameGrid {
                                          &self.current_tetronimo.mask,
                                          self.tet_coord,
                                          &self.grid)?
-            { Err("cannot allocate new tetronimo".to_string()) }
+            { Err(GridError::CannotAllocateNewTet) }
 
         else { Ok(()) }
     }
@@ -69,7 +72,7 @@ impl GameGrid {
         }
     } 
 
-    fn is_move_and_mask_legal(coord_change: Coord, tet_mask: &[Coord; 4], tet_coord: Coord, grid: &Grid) -> Result<bool, String> { 
+    fn is_move_and_mask_legal(coord_change: Coord, tet_mask: &[Coord; 4], tet_coord: Coord, grid: &Grid) -> Result<bool, GridError> { 
         //checks if tetronimo still fits in grid and does not collide with other boxes
         let mut new_coords = tet_mask.iter().map(|x: &Coord| *x + tet_coord + coord_change);
         // first, check if coords are valid
@@ -78,10 +81,10 @@ impl GameGrid {
             // to usize with negative values                                  
             { Ok(new_coords.all(|x: Coord| { grid[x.x as usize][x.y as usize].is_none() })) }
         
-        else { Err(String::from("tetronimo has coord outside grid")) }
+        else { Err(GridError::TetOutsideGrid) }
     }
 
-    fn move_tet(&mut self, coord_change: Coord) -> Result<(), String> {
+    fn move_tet(&mut self, coord_change: Coord) -> Result<(), GridError> {
 
         let is_legal: bool = Self::is_move_and_mask_legal(coord_change,
                                                           &self.current_tetronimo.mask,
@@ -91,23 +94,31 @@ impl GameGrid {
         match is_legal {
             true => { self.tet_coord += coord_change ;
                       Ok(()) }
-            false => Err("move is not possible".to_string())
+            false => Err(GridError::ImpossibleMove)
         }
     }
 
-    pub fn move_tet_down(&mut self) -> Result<(), String> {
-        self.move_tet(Coord { x: 0, y: -1 })
+    pub fn move_tet_down(&mut self) -> Result<usize, GridError> {
+
+        let move_result: Result<(), GridError> = self.move_tet(Coord { x: 0, y: -1 });
+
+        if let Err(error) = move_result && (error == GridError::ImpossibleMove)
+            { self.fix_current_tetromino();
+              self.renew_current_tetronimo()?;
+              Ok(self.remove_full_lines()) }
+
+        else {Ok(0)}         
     }
 
-    pub fn move_tet_left(&mut self) -> Result<(), String> {
+    pub fn move_tet_left(&mut self) -> Result<(), GridError> {
         self.move_tet(Coord { x: -1, y: 0 })
     }
 
-    pub fn move_tet_right(&mut self) -> Result<(), String> {
+    pub fn move_tet_right(&mut self) -> Result<(), GridError> {
         self.move_tet(Coord { x: 1, y: 0 })
     }
 
-    fn can_tet_change(&self) -> Result<bool, String> {
+    fn can_tet_change(&self) -> Result<bool, GridError> {
         Self::is_move_and_mask_legal(Coord { x: 0, y: 0 }, 
                                      &self.current_tetronimo.mask,
                                      self.tet_coord,
@@ -139,8 +150,8 @@ impl GameGrid {
         nb_removed_lines
     }
 
-    fn dump_tet(&mut self) -> Result<(), String> {
-    
+    fn dump_tet(&mut self) -> Result<usize, GridError> {
+
         let mut max_possible_down_move: Coord = Coord { x: 0, y: 0 };
 
         loop { 
@@ -154,9 +165,11 @@ impl GameGrid {
         }
 
         self.move_tet(max_possible_down_move)?;
+        self.fix_current_tetromino();
+        self.renew_current_tetronimo();
+        let score: usize = self.remove_full_lines();
         
-        Ok(())
-
+        Ok(score)
     }
 
 }
