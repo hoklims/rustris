@@ -61,7 +61,7 @@ impl GameGrid {
     pub fn fix_current_tetromino(&mut self) -> () {
         let tet_coord = self.current_tetronimo.mask.iter().map(|x: &Coord| *x + self.tet_coord);
         for coord in tet_coord {
-            self.grid[coord.x as usize][coord.y as usize] = Some(self.current_tetronimo.color);
+            self.grid[coord.y as usize][coord.x as usize] = Some(self.current_tetronimo.color);
         }
     }
 
@@ -79,7 +79,7 @@ impl GameGrid {
         if new_coords.all(|x: Coord| { Self::is_coord_in_grid(x) })
             // check for overlap, made in a second step to avoid converting x or y
             // to usize with negative values                                  
-            { Ok(new_coords.all(|x: Coord| { grid[x.x as usize][x.y as usize].is_none() })) }
+            { Ok(new_coords.all(|x: Coord| { grid[x.y as usize][x.x as usize].is_none() })) }
         
         else { Err(GridError::TetOutsideGrid) }
     }
