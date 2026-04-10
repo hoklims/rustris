@@ -113,6 +113,7 @@ impl Tetronimo {
                             color: LIGHTGRAY,
                             mask: &MASKS_T[0],
                             next_mask: &MASKS_T[1] }}
+                            
         }
     }
 

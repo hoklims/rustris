@@ -56,7 +56,7 @@ impl GameGrid {
         else { Ok(()) }
     }
 
-    pub fn fix_current_tetromino(&mut self) -> () {
+    fn fix_current_tetromino(&mut self) -> () {
         let tet_coord = self.current_tetronimo.mask.iter().map(|x: &Coord| *x + self.tet_coord);
         for coord in tet_coord {
             self.grid[coord.y as usize][coord.x as usize] = Some(self.current_tetronimo.color);
@@ -119,8 +119,7 @@ impl GameGrid {
                                     &self.current_tetronimo.next_mask)
     }
 
-    fn update_tet_mask(&mut self) -> Result<(), GridError> {
-
+    pub fn update_tet_mask(&mut self) -> Result<(), GridError> {
         if self.can_tet_change()? { self.current_tetronimo.update_mask_and_next_one(); }
         Ok(())
     }
@@ -150,7 +149,7 @@ impl GameGrid {
         nb_removed_lines
     }
 
-    fn dump_tet(&mut self) -> Result<usize, GridError> {
+    pub fn dump_tet(&mut self) -> Result<usize, GridError> {
 
         let mut max_possible_down_move: Coord = Coord { x: 0, y: 0 };
 
