@@ -1,6 +1,6 @@
 use crate::gamecore::tetrominos::{ Coord, Tetromino, TetrominoType, TetrominoTypeIter };
-use std::{usize, vec::Vec};
-use macroquad::{color::Color, rand::ChooseRandom};
+use std::{ usize, vec::Vec };
+use macroquad::{ color::Color, rand::ChooseRandom };
 use strum::IntoEnumIterator;
 use std::boxed::Box;
 
@@ -115,7 +115,8 @@ impl GameGrid {
 
         let move_result: Result<(), GridError> = self.move_tet(Coord { x: 0, y: -1 });
 
-        if let Err(error) = move_result && (error == GridError::ImpossibleMove)
+        if let Err(error) = move_result && 
+            (error == GridError::ImpossibleMove || error == GridError::TetWentThroughFloor)
             { self.fix_current_tetromino();
               self.renew_current_tetromino()?;
               Ok(self.remove_full_lines()) }
