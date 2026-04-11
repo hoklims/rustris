@@ -70,14 +70,14 @@ impl GameGrid {
         }
     }
 
-    fn went_through_floor(coord: Coord) -> bool {
+    fn went_through_floor(coord: &Coord) -> bool {
         match coord {
             Coord { x: 0..GRID_WIDTH, y: -1..GRID_HEIGHT } => true,
             _ => false
         }
     }
 
-    fn is_coord_in_grid(coord: Coord) -> bool {
+    fn is_coord_in_grid(coord: &Coord) -> bool {
         match coord {
             Coord { x: 0..GRID_WIDTH, y: 0..GRID_HEIGHT } => true,
             _ => false
@@ -86,14 +86,14 @@ impl GameGrid {
 
     fn is_move_and_mask_legal(&self, coord_change: Coord, tet_mask: &[Coord; 4]) -> Result<bool, GridError> { 
         //checks if tetromino still fits in grid and does not collide with other boxes
-        let mut new_coords = tet_mask.iter().map(|x: &Coord| x + &self.tet_coord + coord_change);
+        let new_coords: [Coord; 4] = tet_mask.map(|x: Coord| x + self.tet_coord + coord_change);
         // first, check if coords are valid
-        if new_coords.all(|x: Coord| { Self::is_coord_in_grid(x) })
+        if new_coords.iter().all(|x: &Coord| { Self::is_coord_in_grid(x) })
             // check for overlap, made in a second step to avoid converting x or y
             // to usize with negative values                                  
-            { Ok(new_coords.all(|x: Coord| { self.grid[x.y as usize][x.x as usize].is_none() })) }
+            { Ok(new_coords.iter().all(|x: &Coord| { self.grid[x.y as usize][x.x as usize].is_none() })) }
 
-        else if new_coords.any(|x: Coord| { Self::went_through_floor(x)  }) 
+        else if new_coords.iter().any(|x: &Coord| { Self::went_through_floor(x)  }) 
             { Err(GridError::TetWentThroughFloor)  }
         
         else { Err(GridError::TetOutsideGrid) }
@@ -144,9 +144,8 @@ impl GameGrid {
 
     fn remove_line(&mut self, line_nb: usize) -> () {
         // replace each line by its up neighbor, then clears top
-        for line_idx in line_nb..(GRID_HEIGHT - 1) as usize {
-            self.grid[line_idx] = self.grid[line_idx + 1];
-        }
+        for line_idx in line_nb..(GRID_HEIGHT - 1) as usize 
+            { self.grid[line_idx] = self.grid[line_idx + 1]; }
         self.grid[(GRID_HEIGHT - 1) as usize] = [None; GRID_WIDTH as usize]
     }
 
@@ -156,9 +155,9 @@ impl GameGrid {
 
         let mut nb_removed_lines: usize = 0;
 
-        while line_nb < (GRID_HEIGHT - 1) as usize {
+        while line_nb < GRID_HEIGHT as usize {
 
-            if self.grid[line_nb].into_iter().all(|x: Option<Color>| x.is_some()) {
+            if !self.grid[line_nb].iter().any(|x: &Option<Color>| x.is_none()) {
                 self.remove_line(line_nb);
                 nb_removed_lines += 1;
             }
