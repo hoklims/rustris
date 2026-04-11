@@ -5,7 +5,7 @@ use crate::gamecore::game_grid::{ GRID_HEIGHT, GRID_WIDTH };
 use crate::gamecore::masks::{ MASKS_I, MASKS_J, MASKS_L, MASKS_O, MASKS_S, MASKS_T, MASKS_Z } ;
 
 #[derive(EnumIter)]
-pub enum TetronimoType { I, O, T, L, J, Z, S }
+pub enum TetrominoType { I, O, T, L, J, Z, S }
 
 pub const CYAN: Color = Color::new(0.0, 1.0, 1.0, 0.0);
 
@@ -44,7 +44,7 @@ impl std::ops::Add for &Coord {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct Tetronimo {
+pub struct Tetromino {
     blocks_masks: &'static[[Coord; 4]],
     current_mask_idx: usize,
     pub color: Color,
@@ -52,63 +52,63 @@ pub struct Tetronimo {
     pub next_mask: &'static[Coord; 4]
 }
 
-impl Tetronimo {
+impl Tetromino {
 
-    pub fn new(t_type: TetronimoType) -> Tetronimo {
+    pub fn new(t_type: TetrominoType) -> Tetromino {
 
         match t_type {
 
-            TetronimoType::O => { 
+            TetrominoType::O => { 
                 
-                Tetronimo { blocks_masks: MASKS_O,
+                Tetromino { blocks_masks: MASKS_O,
                             current_mask_idx: 0,
                             color: CYAN,
                             mask: &MASKS_O[0],
                             next_mask: &MASKS_O[0]}}
 
-            TetronimoType::I => { 
+            TetrominoType::I => { 
 
-                Tetronimo { blocks_masks: MASKS_I,
+                Tetromino { blocks_masks: MASKS_I,
                             current_mask_idx: 0,
                             color: RED,
                             mask: &MASKS_I[0],
                             next_mask: &MASKS_I[1] }}
 
-            TetronimoType::J => {                                
+            TetrominoType::J => {                                
                 
-                Tetronimo { blocks_masks: MASKS_J,
+                Tetromino { blocks_masks: MASKS_J,
                             current_mask_idx: 0,
                             color: MAGENTA,
                             mask: &MASKS_J[0],
                             next_mask: &MASKS_J[1] }}
 
-            TetronimoType::S => { 
+            TetrominoType::S => { 
                 
-                Tetronimo { blocks_masks: MASKS_S,
+                Tetromino { blocks_masks: MASKS_S,
                             current_mask_idx: 0,
                             color: BLUE,
                             mask: &MASKS_S[0],
                             next_mask: &MASKS_S[1] }}
 
-            TetronimoType::Z => { 
+            TetrominoType::Z => { 
                 
-                Tetronimo { blocks_masks: MASKS_Z,
+                Tetromino { blocks_masks: MASKS_Z,
                             current_mask_idx: 0,
                             color: GREEN,
                             mask: &MASKS_Z[0],
                             next_mask: &MASKS_Z[1] }}
 
-            TetronimoType::L => { 
+            TetrominoType::L => { 
                 
-                Tetronimo { blocks_masks: MASKS_L,
+                Tetromino { blocks_masks: MASKS_L,
                             current_mask_idx: 0,
                             color: YELLOW,
                             mask: &MASKS_L[0],
                             next_mask: &MASKS_L[1] }}
 
-            TetronimoType::T => { 
+            TetrominoType::T => { 
                 
-                Tetronimo { blocks_masks: MASKS_T,
+                Tetromino { blocks_masks: MASKS_T,
                             current_mask_idx: 0,
                             color: LIGHTGRAY,
                             mask: &MASKS_T[0],

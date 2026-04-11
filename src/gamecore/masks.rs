@@ -1,4 +1,4 @@
-use crate::gamecore::tetronimos::Coord;
+use crate::gamecore::tetrominos::Coord;
 
 pub const MASKS_O:  &[[Coord; 4]] = &[[Coord{ x:  0, y: 0 }, 
                                        Coord{ x:  1, y: 0 }, 
