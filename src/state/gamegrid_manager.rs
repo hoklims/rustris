@@ -1,4 +1,4 @@
-use crate::gamecore::game_grid::{ GameGrid, GridError};
+use crate::gamecore::game_grid::{ GameGrid, GridError };
 use std::time::{ Duration, SystemTime };
 
 #[derive(PartialEq, Clone, Copy)]
@@ -13,10 +13,8 @@ struct GameGridManager {
     score: usize,
     speed: Duration,
     level: usize,
-    last_update: SystemTime,
-    last_action_time: SystemTime,
-    last_action: Action,
-    action_delay: Duration
+    last_forced_move_down: SystemTime,
+    last_action: Option<Action>,
 }
 
 impl GameGridManager {
@@ -26,15 +24,14 @@ impl GameGridManager {
         GameGridManager{ score: 0,
                          speed: Duration::from_millis(1200), 
                          level: 1 , 
-                         last_update: SystemTime::now(),
-                         last_action_time: SystemTime::now(),
-                         last_action: Action::Drop } 
+                         last_forced_move_down: SystemTime::now(),
+                         last_action: None } 
     }
 
     fn manage_tet_fall(&mut self, grid: &mut GameGrid) -> Result<usize, GridError> {
 
-        if SystemTime::now().duration_since(self.last_update).unwrap() > self.speed 
-            { self.last_update = SystemTime::now(); grid.move_tet_down() }
+        if SystemTime::now().duration_since(self.last_forced_move_down).unwrap() > self.speed 
+            { self.last_forced_move_down = SystemTime::now(); grid.move_tet_down() }
         else { Ok(0) }
     }
 
@@ -43,7 +40,7 @@ impl GameGridManager {
         self.level += 1;
         let ms_speed: f64 = self.speed.as_millis() as f64;
         let new_speed: u64 = (ms_speed * 0.9) as u64;
-        self.speed = Duration::from_millis(new_speed)
+        self.speed = Duration::from_millis(new_speed);
 
     }
 
@@ -57,16 +54,6 @@ impl GameGridManager {
             }
     }
 
-    fn must_block_action(&self, action: Action) -> bool {
-
-        let is_same_action: bool = action == self.last_action;
-        let elapsed_time_since_last_action: Duration = SystemTime::now().duration_since(self.last_update).unwrap();
-        let is_delay_exceeded: bool = elapsed_time_since_last_action > self.action_delay;
-        let is_action_change_mask: bool = action == Action::ChangeMask;
-
-            is_same_action && is_delay_exceeded && !is_action_change_mask        
-    }
-
     fn run_game_iter(&mut self, grid: &mut GameGrid, action: Option<Action>) -> Result<(), GridError> {
 
         let score: usize = self.manage_tet_fall(grid)?;
@@ -74,8 +61,11 @@ impl GameGridManager {
 
         if self.score / self.level > 100 { self.level_up(); }
 
-        if let Some(player_action) = action && !self.must_block_action(player_action)
-            { self.score += self.run_action(grid, player_action)?; }
+        match action {
+            Some(player_action) => { self.score += self.run_action(grid, player_action)?;
+                                             self.last_action = Some(player_action); }
+            None => { self.last_action = None }
+        }
 
         Ok(())
     }
