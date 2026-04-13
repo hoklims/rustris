@@ -5,22 +5,25 @@ const HW_SCREEN_RATIO: f32 = 22.0 / 17.0;
 const HW_GRID_RATIO: f32 = GRID_HEIGHT as f32 / GRID_WIDTH as f32;
 const HW_GRID_WBORDER_RATIO: f32 = (GRID_HEIGHT as f32 + 2.0) / (GRID_WIDTH as f32 + 2.0);
 
-struct Window {
-    screen_dim: (f32, f32), // order of dim must be [height, width]
-    display_dim: (f32, f32),
-    display_origin: (f32, f32) // coordinates are in order (x, y)
+pub struct Window {
+    pub screen_dim: (f32, f32), // order of dim must be [height, width]
+    pub display_dim: (f32, f32),
+    pub display_origin: (f32, f32), // coordinates are in order (x, y)
+    pub block_size: f32
 }
 
 impl Window {
     
-    fn new() -> Window {
+    pub fn new() -> Window {
         let screen_dim: (f32, f32) = ( screen_height(), screen_width() );
         let display_dim: (f32, f32) = Self::compute_display_dim(&screen_dim);
         let display_origin: (f32, f32) = Self::compute_display_origin(&screen_dim, 
                                                                       &display_dim);
+        let block_size: f32 = screen_dim.0 / ( (GRID_HEIGHT + 2) as f32 );
         Window { screen_dim: screen_dim,
                  display_dim: display_dim,
-                 display_origin }
+                 display_origin: display_origin,
+                 block_size: block_size }
     }
 
     fn has_changed(&self) -> bool {
@@ -53,7 +56,7 @@ impl Window {
         else { (0.0, 0.0) }
     }
 
-    fn refresh_window_if_needed(&mut self) -> () {
+    pub fn refresh_window_if_needed(&mut self) -> () {
 
         if self.has_changed() {
 
@@ -61,7 +64,9 @@ impl Window {
             self.display_dim = Self::compute_display_dim(&self.screen_dim);
             self.display_origin = Self::compute_display_origin(&self.screen_dim, 
                                                                &self.display_dim);
+            self.block_size = self.screen_dim.0 / ( (GRID_HEIGHT + 2) as f32 );
         }
     }
+
 }
 
