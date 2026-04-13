@@ -10,17 +10,16 @@ pub enum RenderingError {
 
 pub fn render_block(raw_coord: &(f32, f32),
                     color: Color,
-                    window: &Window) -> () {
+                    window: &Window,
+                    ghost:bool) -> () {
 
     let top_left_coord: (f32, f32) = (window.display_origin.0 + raw_coord.0, 
                                       window.display_origin.1 + raw_coord.1);
-    println!("top left cooord {:?}", &top_left_coord);
-    println!("screen_dim {:?}", &window.display_dim);
-    render_edgy_block(&top_left_coord, window, color);
+    render_edgy_block(&top_left_coord, window, color, ghost);
     
 }
 
-pub fn render_edgy_block(top_left_coord: &(f32, f32), window: &Window, color: Color) -> () {
+pub fn render_edgy_block(top_left_coord: &(f32, f32), window: &Window, color: Color, ghost: bool) -> () {
     /* This function draws an edgy block with triangles for border and square
        for inner color. Coordinates array are clock wise and start at top left */
         let outer_edges_coords: [Vec2; 4] = 
@@ -34,20 +33,19 @@ pub fn render_edgy_block(top_left_coord: &(f32, f32), window: &Window, color: Co
 
         let inner_top_left_coord: (f32, f32) = ( top_left_coord.0 + edge_size,
                                                  top_left_coord.1 + edge_size );
-        println!("top left coord {:?} inner top left coord {:?}", &top_left_coord, &inner_top_left_coord);
-        println!("outer edge {:?}", &outer_edges_coords);
         let inner_edges_coords: [Vec2; 4] = 
             [ Vec2::new(inner_top_left_coord.0, inner_top_left_coord.1),
               Vec2::new(inner_top_left_coord.0 + inner_square_size, inner_top_left_coord.1),
               Vec2::new(inner_top_left_coord.0 + inner_square_size, inner_top_left_coord.1 + inner_square_size),
               Vec2::new(inner_top_left_coord.0, inner_top_left_coord.1 + inner_square_size) ];
-        println!("inner edge {:?}", &inner_edges_coords);
 
         draw_edges(&outer_edges_coords, &inner_edges_coords, color);
-        draw_rectangle(inner_edges_coords[0].x,
-                       inner_edges_coords[0].y, 
-                       inner_square_size, 
-                       inner_square_size, color);
+        if !ghost {
+            draw_rectangle(inner_edges_coords[0].x,
+                           inner_edges_coords[0].y, 
+                           inner_square_size, 
+                           inner_square_size, color);
+        }
         
     }
 
