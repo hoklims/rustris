@@ -77,6 +77,3 @@ fn draw_edges(outer_coords: &[Vec2; 4], inner_coords: &[Vec2; 4], color: Color) 
     draw_triangle(outer_coords[2], inner_coords[2], outer_coords[3], darker);
     draw_triangle(outer_coords[3], inner_coords[3], inner_coords[2], darker);
 }
-struct Renderer {
-
-}
