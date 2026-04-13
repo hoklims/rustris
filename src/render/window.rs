@@ -1,9 +1,10 @@
 use crate::gamecore::game_grid::{ GRID_HEIGHT, GRID_WIDTH };
 use macroquad::window::{ screen_width, screen_height };
 
-const HW_SCREEN_RATIO: f32 = 22.0 / 17.0;
-const HW_GRID_RATIO: f32 = GRID_HEIGHT as f32 / GRID_WIDTH as f32;
-const HW_GRID_WBORDER_RATIO: f32 = (GRID_HEIGHT as f32 + 2.0) / (GRID_WIDTH as f32 + 2.0);
+const MENU_HEIGHT: i8 = 4;
+const MENU_WIDTH: i8 = 5;
+const HW_SCREEN_RATIO: f32 = (GRID_HEIGHT + 2) as f32 / 
+                             (GRID_WIDTH + MENU_WIDTH + 3) as f32;
 
 pub struct Window {
     pub screen_dim: (f32, f32), // order of dim must be [height, width]
@@ -38,7 +39,7 @@ impl Window {
             (width * HW_SCREEN_RATIO, width)
         }
         else if height / HW_SCREEN_RATIO < width { // screen too wide
-            (height / HW_GRID_RATIO, width)
+            (height / HW_SCREEN_RATIO, width)
         }
         else { (height, width) } // window has right size, can use all area
     }
