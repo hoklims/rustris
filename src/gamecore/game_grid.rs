@@ -9,7 +9,7 @@ pub const GRID_WIDTH: i8 = 10;
 
 type Grid = Box<[[Option<Color>; GRID_WIDTH as usize]; GRID_HEIGHT as usize]>;
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Debug)]
 pub enum GridError { 
     
     CannotAllocateNewTet, 
@@ -171,11 +171,14 @@ impl GameGrid {
         let mut max_possible_down_move: Coord = Coord { x: 0, y: 0 };
 
         loop { 
-               let new_coord: Coord = max_possible_down_move + Coord{ x: 0, y: -1 };
-               if self.is_move_and_mask_legal(new_coord,
-                                              &self.current_tetromino.mask)?
-                    { max_possible_down_move = new_coord; }
-               else { break }
+            let new_coord: Coord = max_possible_down_move + Coord{ x: 0, y: -1 };
+            match self.is_move_and_mask_legal(new_coord,
+                                              &self.current_tetromino.mask) {
+                Ok(result)  =>  { if result { max_possible_down_move = new_coord; }
+                                        else { break; } },
+                Err(error) => { if error == GridError::TetWentThroughFloor { break; }
+                                           else { return Err(error); } }
+            }
         }
 
         self.move_tet(max_possible_down_move)?;
