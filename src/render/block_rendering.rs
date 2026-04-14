@@ -14,6 +14,20 @@ pub fn render_block(raw_coord: &(f32, f32),
     
 }
 
+pub fn render_square(raw_coord: &(f32, f32),
+                     color: Color,
+                     window: &Window) -> () {
+
+    let top_left_coord: (f32, f32) = (window.display_origin.0 + raw_coord.0, 
+                                      window.display_origin.1 + raw_coord.1);
+    draw_rectangle(top_left_coord.0,
+                   top_left_coord.1, 
+                   window.block_size, 
+                   window.block_size,
+                   color);
+    
+}
+
 pub fn render_edgy_block(top_left_coord: &(f32, f32), window: &Window, color: Color, ghost: bool) -> () {
     /* This function draws an edgy block with triangles for border and square
        for inner color. Coordinates array are clock wise and start at top left */
@@ -39,7 +53,8 @@ pub fn render_edgy_block(top_left_coord: &(f32, f32), window: &Window, color: Co
             draw_rectangle(inner_edges_coords[0].x,
                            inner_edges_coords[0].y, 
                            inner_square_size, 
-                           inner_square_size, color);
+                           inner_square_size,
+                           color);
         }
         
     }
