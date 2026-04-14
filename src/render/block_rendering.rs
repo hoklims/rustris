@@ -3,11 +3,6 @@ use macroquad::{ color::Color, prelude::{ draw_rectangle, draw_triangle, Vec2 }}
 
 const EDGE_SIZE_RATIO: f32 = 0.1; // bevel size don't go above 0.5
 
-pub enum RenderingError {
-    CoordOutsideWindow
-}
-
-
 pub fn render_block(raw_coord: &(f32, f32),
                     color: Color,
                     window: &Window,
