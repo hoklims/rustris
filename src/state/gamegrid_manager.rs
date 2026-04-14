@@ -1,3 +1,5 @@
+use macroquad::input::{ is_key_pressed, KeyCode };
+
 use crate::gamecore::game_grid::{ GameGrid, GridError };
 use std::time::{ Duration, SystemTime };
 
@@ -9,7 +11,7 @@ pub enum Action {
     Drop
 }
 
-struct GameGridManager {
+pub struct GameGridManager {
     score: usize,
     speed: Duration,
     level: usize,
@@ -19,7 +21,7 @@ struct GameGridManager {
 
 impl GameGridManager {
 
-    fn new() -> GameGridManager { 
+    pub fn new() -> GameGridManager { 
 
         GameGridManager{ score: 0,
                          speed: Duration::from_millis(1200), 
@@ -35,7 +37,7 @@ impl GameGridManager {
         else { Ok(0) }
     }
 
-    pub fn level_up(&mut self) -> () {
+    fn level_up(&mut self) -> () {
 
         self.level += 1;
         let ms_speed: f64 = self.speed.as_millis() as f64;
@@ -59,7 +61,7 @@ impl GameGridManager {
         let score: usize = self.manage_tet_fall(grid)?;
         self.score += score;
 
-        if self.score / self.level > 100 { self.level_up(); }
+        if self.score / self.level > 100 { self.level_up(); } // TODO: update level change
 
         match action {
             Some(player_action) => { self.score += self.run_action(grid, player_action)?;
@@ -68,6 +70,20 @@ impl GameGridManager {
         }
 
         Ok(())
+    }
+
+    pub fn get_and_apply_player_input(&mut self, grid: &mut GameGrid) -> Result<(), GridError> {
+
+        match (is_key_pressed(KeyCode::Up),
+               is_key_pressed(KeyCode::Left),
+               is_key_pressed(KeyCode::Right),
+               is_key_pressed(KeyCode::Down)) {
+            (true, ..) => self.run_game_iter(grid, Some(Action::ChangeMask)),
+            (_, true, ..) => self.run_game_iter(grid, Some(Action::MoveLeft)),
+            (.., true, _) => self.run_game_iter(grid, Some(Action::MoveRight)),
+            (.., true) => self.run_game_iter(grid, Some(Action::Drop)),
+            _ => self.run_game_iter(grid, None)
+        }
     }
 }
 
