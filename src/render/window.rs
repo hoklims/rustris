@@ -1,16 +1,18 @@
 use crate::gamecore::game_grid::{ GRID_HEIGHT, GRID_WIDTH };
 use macroquad::window::{ screen_width, screen_height };
 
-const MENU_HEIGHT: i8 = 4;
-const MENU_WIDTH: i8 = 5;
+pub const MENU_HEIGHT: i8 = 4;
+pub const MENU_WIDTH: i8 = 5;
 const HW_SCREEN_RATIO: f32 = (GRID_HEIGHT + 2) as f32 / 
                              (GRID_WIDTH + MENU_WIDTH + 3) as f32;
+
+pub const HWSCREEN_DIM_BLOCKS: (i8, i8) = (GRID_HEIGHT + 2, GRID_WIDTH + MENU_WIDTH + 3) ;
 
 pub struct Window {
     pub screen_dim: (f32, f32), // order of dim must be [height, width]
     pub display_dim: (f32, f32),
     pub display_origin: (f32, f32), // coordinates are in order (x, y)
-    pub block_size: f32
+    pub block_size: f32,
 }
 
 impl Window {
@@ -21,6 +23,7 @@ impl Window {
         let display_origin: (f32, f32) = Self::compute_display_origin(&screen_dim, 
                                                                       &display_dim);
         let block_size: f32 = screen_dim.0 / ( (GRID_HEIGHT + 2) as f32 );
+
         Window { screen_dim: screen_dim,
                  display_dim: display_dim,
                  display_origin: display_origin,

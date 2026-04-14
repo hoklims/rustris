@@ -22,9 +22,9 @@ pub enum GridError {
 pub struct GameGrid {
 
     tetrominos: Vec<Tetromino>,
-    current_tetromino: Tetromino,
-    grid: Grid,
-    tet_coord: Coord
+    pub current_tetromino: Tetromino,
+    pub grid: Grid,
+    pub tet_coord: Coord
 
 }
 
