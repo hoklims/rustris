@@ -72,7 +72,7 @@ impl GameGrid {
 
     fn went_through_floor(coord: &Coord) -> bool {
         match coord {
-            Coord { x: 0..GRID_WIDTH, y: -1..GRID_HEIGHT } => true,
+            Coord { x: 0..GRID_WIDTH, y: -1 } => true,
             _ => false
         }
     }
@@ -88,6 +88,8 @@ impl GameGrid {
         //checks if tetromino still fits in grid and does not collide with other boxes
         let new_coords: [Coord; 4] = tet_mask.map(|x: Coord| x + self.tet_coord + coord_change);
         // first, check if coords are valid
+        println!("new coords in legal method {:?}", &new_coords);
+
         if new_coords.iter().all(|x: &Coord| { Self::is_coord_in_grid(x) })
             // check for overlap, made in a second step to avoid converting x or y
             // to usize with negative values                                  
@@ -101,14 +103,11 @@ impl GameGrid {
 
     fn move_tet(&mut self, coord_change: Coord) -> Result<(), GridError> {
 
-        let is_legal: bool = self.is_move_and_mask_legal(coord_change,
-                                                         &self.current_tetromino.mask)?;
+        let is_legal_res:Result<bool, GridError> = self.is_move_and_mask_legal(coord_change,
+                                                                               &self.current_tetromino.mask);
 
-        match is_legal {
-            true => { self.tet_coord += coord_change ;
-                      Ok(()) }
-            false => Err(GridError::ImpossibleMove)
-        }
+        if let Ok(is_legal) = is_legal_res && is_legal {  self.tet_coord += coord_change; Ok(()) }
+        else { Ok(()) }
     }
 
     pub fn move_tet_down(&mut self) -> Result<usize, GridError> {
@@ -138,7 +137,7 @@ impl GameGrid {
     }
 
     pub fn update_tet_mask(&mut self) -> Result<(), GridError> {
-        if self.can_tet_change()? { self.current_tetromino.update_mask_and_next_one(); }
+        if let Ok(_) = self.can_tet_change() { self.current_tetromino.update_mask_and_next_one(); }
         Ok(())
     }
 
@@ -149,7 +148,7 @@ impl GameGrid {
         self.grid[(GRID_HEIGHT - 1) as usize] = [None; GRID_WIDTH as usize]
     }
 
-    pub fn remove_full_lines(&mut self) -> usize {
+     fn remove_full_lines(&mut self) -> usize {
 
         let mut line_nb: usize = 0;
 
@@ -172,19 +171,20 @@ impl GameGrid {
 
         loop { 
             let new_coord: Coord = max_possible_down_move + Coord{ x: 0, y: -1 };
-            match self.is_move_and_mask_legal(new_coord,
-                                              &self.current_tetromino.mask) {
-                Ok(result)  =>  { if result { max_possible_down_move = new_coord; }
-                                        else { break; } },
-                Err(error) => { if error == GridError::TetWentThroughFloor { break; }
-                                           else { return Err(error); } }
-            }
+            if let Ok(is_legal) = self.is_move_and_mask_legal(new_coord, 
+                                                                    self.current_tetromino.mask)
+                && is_legal
+                { max_possible_down_move = new_coord; }
+            else { break; }
         }
-
-        self.move_tet(max_possible_down_move)?;
+        println!("max possible down move {:?} tet coord {:?}", &max_possible_down_move, &self.tet_coord);
+        let move_result: Result<(), GridError> = self.move_tet(max_possible_down_move);
+        println!("move result {:?}", move_result);
+        //if let Err(error) = move_result && error == GridError::TetOutsideGrid 
+        //    { Err(error)? }
         self.fix_current_tetromino();
-        self.renew_current_tetromino()?;
         let score: usize = self.remove_full_lines();
+        self.renew_current_tetromino()?;
         
         Ok(score)
     }

@@ -5,7 +5,9 @@ mod gamecore;
 mod state;
 mod render;
 use crate::{ gamecore::game_grid::GameGrid, 
-             render::{ background_rendering::render_background, gamegrid_rendering::render_gamegrid, window::Window },
+             render::{ background_rendering::render_background, 
+                       gamegrid_rendering::render_gamegrid, 
+                       window::Window },
              state::gamegrid_manager::GameGridManager };
 #[macroquad::main("Rustris")]
 async fn main() {

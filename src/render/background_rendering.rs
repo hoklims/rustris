@@ -18,7 +18,7 @@ pub fn render_background(window: &Window) -> () {
     for row in 1..(MENU_HEIGHT + 1) {
         for col in 0..HWSCREEN_DIM_BLOCKS.1 {
             if !(1..(GRID_WIDTH + 1)).contains(&col) &&
-               !((GRID_WIDTH + 3)..(HWSCREEN_DIM_BLOCKS.1 - 1)).contains(&col)
+               !((GRID_WIDTH + 2)..(HWSCREEN_DIM_BLOCKS.1 - 1)).contains(&col)
             { render_block(&( col as f32 * window.block_size, row as f32 * window.block_size), 
                            GRAY, 
                            window, 

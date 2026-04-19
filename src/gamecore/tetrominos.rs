@@ -137,13 +137,16 @@ impl Tetromino {
         { self.mask.iter().map(|x: &Coord| x.x).max().unwrap() }
 
     pub fn get_height(&self) -> i8 
-        { self.mask.iter().map(|x: &Coord| x.y).max().unwrap() }
+        { println!("mask {:?}", self.mask); self.mask.iter().map(|x: &Coord| x.y).max().unwrap() }
 
     pub fn get_init_coord(&self) -> Coord {
         let tet_height: i8 = self.get_height();
         let tet_width: i8 = self.get_width(); 
-        Coord { x: (GRID_WIDTH - tet_width) / 2, 
-                y:  GRID_HEIGHT - tet_height }
+        println!("tet height {:?}", &tet_height);
+        println!("new tet coords, {:?}", Coord { x: (GRID_WIDTH - tet_width - 1) / 2, 
+                                                 y:  GRID_HEIGHT - tet_height - 1 });
+        Coord { x: (GRID_WIDTH - tet_width - 1) / 2, 
+                y:  GRID_HEIGHT - tet_height - 1 }
     }
 
 }
