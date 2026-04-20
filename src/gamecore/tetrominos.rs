@@ -7,7 +7,7 @@ use crate::gamecore::masks::{ MASKS_I, MASKS_J, MASKS_L, MASKS_O, MASKS_S, MASKS
 #[derive(EnumIter)]
 pub enum TetrominoType { I, O, T, L, J, Z, S }
 
-pub const CYAN: Color = Color::new(0.0, 1.0, 1.0, 0.0);
+pub const CYAN: Color = Color::new(0.0, 1.0, 1.0, 1.0);
 
 #[derive(Debug, Clone, Copy)]
 pub struct Coord {
@@ -137,14 +137,11 @@ impl Tetromino {
         { self.mask.iter().map(|x: &Coord| x.x).max().unwrap() }
 
     pub fn get_height(&self) -> i8 
-        { println!("mask {:?}", self.mask); self.mask.iter().map(|x: &Coord| x.y).max().unwrap() }
+        { self.mask.iter().map(|x: &Coord| x.y).max().unwrap() }
 
     pub fn get_init_coord(&self) -> Coord {
         let tet_height: i8 = self.get_height();
         let tet_width: i8 = self.get_width(); 
-        println!("tet height {:?}", &tet_height);
-        println!("new tet coords, {:?}", Coord { x: (GRID_WIDTH - tet_width - 1) / 2, 
-                                                 y:  GRID_HEIGHT - tet_height - 1 });
         Coord { x: (GRID_WIDTH - tet_width - 1) / 2, 
                 y:  GRID_HEIGHT - tet_height - 1 }
     }

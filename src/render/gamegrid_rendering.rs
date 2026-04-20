@@ -30,8 +30,7 @@ pub fn render_gamegrid(gamegrid: &GameGrid, window: &Window) -> () {
                             .map(|x: Coord| {x + gamegrid.tet_coord}) {
         let mq_coord: (f32, f32) = 
             ( coord.x as f32 * window.block_size + gamegrid_display_origin.0,
-             (GRID_HEIGHT - coord.y) as f32 * window.block_size + gamegrid_display_origin.1 );
-
+             (GRID_HEIGHT - coord.y - 1) as f32 * window.block_size + gamegrid_display_origin.1 );
         render_block(&mq_coord, gamegrid.current_tetromino.color, window, false)    
     }
 
