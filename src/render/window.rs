@@ -11,8 +11,10 @@ pub const HWSCREEN_DIM_BLOCKS: (i8, i8) = (GRID_HEIGHT + 2, GRID_WIDTH + MENU_WI
 pub struct Window {
     pub screen_dim: (f32, f32), // order of dim must be [height, width]
     pub display_dim: (f32, f32),
-    pub display_origin: (f32, f32), // coordinates are in order (x, y)
+    pub display_origin: (f32, f32), // coordinates are in order (x, y), top left
     pub block_size: f32,
+    pub score_area_origin: (f32, f32), // (x, y), top left too
+    pub score_area_limit: (f32, f32)
 }
 
 impl Window {
@@ -23,11 +25,16 @@ impl Window {
         let display_origin: (f32, f32) = Self::compute_display_origin(&screen_dim, 
                                                                       &display_dim);
         let block_size: f32 = screen_dim.0 / ( (GRID_HEIGHT + 2) as f32 );
-
+        let score_area_origin = Self::compute_score_area_origin(block_size,
+                                                                            &display_origin);
+        let score_area_limit: (f32, f32) = Self::compute_score_area_limit(block_size,
+                                                                          &score_area_origin);
         Window { screen_dim: screen_dim,
                  display_dim: display_dim,
                  display_origin: display_origin,
-                 block_size: block_size }
+                 block_size: block_size,
+                 score_area_origin: score_area_origin,
+                 score_area_limit: score_area_limit }
     }
 
     fn has_changed(&self) -> bool {
@@ -58,6 +65,16 @@ impl Window {
             { ( 0.0, ((win_height - disp_height) / 2.0) ) }
 
         else { (0.0, 0.0) }
+    }
+
+    fn compute_score_area_origin(block_size: f32, display_origin: &(f32, f32)) -> (f32, f32) {
+        ((GRID_WIDTH + 2) as f32 * block_size + display_origin.0, 
+         block_size + display_origin.1)
+    }
+
+    fn compute_score_area_limit(block_size: f32, score_area_origin: &(f32, f32)) -> (f32, f32) {
+        (score_area_origin.0 + (MENU_WIDTH as f32) * block_size,
+         score_area_origin.1 + (MENU_HEIGHT as f32) * block_size)
     }
 
     pub fn refresh_window_if_needed(&mut self) -> () {
