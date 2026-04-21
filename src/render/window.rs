@@ -90,12 +90,10 @@ impl Window {
 
             self.score_area_origin = Self::compute_score_area_origin(self.block_size,
                                                                      &self.display_origin);
-                                                                     
+
             self.score_area_limit = Self::compute_score_area_limit(self.block_size,
                                                                    &self.score_area_origin);
-            
         }
     }
-
 }
 
