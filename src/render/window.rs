@@ -85,7 +85,15 @@ impl Window {
             self.display_dim = Self::compute_display_dim(&self.screen_dim);
             self.display_origin = Self::compute_display_origin(&self.screen_dim, 
                                                                &self.display_dim);
+
             self.block_size = self.screen_dim.0 / ( (GRID_HEIGHT + 2) as f32 );
+
+            self.score_area_origin = Self::compute_score_area_origin(self.block_size,
+                                                                     &self.display_origin);
+                                                                     
+            self.score_area_limit = Self::compute_score_area_limit(self.block_size,
+                                                                   &self.score_area_origin);
+            
         }
     }
 
