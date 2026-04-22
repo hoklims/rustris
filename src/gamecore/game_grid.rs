@@ -56,8 +56,8 @@ impl GameGrid {
         self.current_tetromino = self.tetrominos.choose().unwrap().clone();
         self.tet_coord = self.current_tetromino.get_init_coord();
         
-        if !self.is_move_and_mask_legal(Coord { x: 0, y: 0 },
-                                        &self.current_tetromino.mask)?
+        if let Err(_) = self.is_move_and_mask_legal(Coord { x: 0, y: 0 },
+                                                    &self.current_tetromino.mask)
             { Err(GridError::CannotAllocateNewTet) }
 
         else { Ok(()) }
