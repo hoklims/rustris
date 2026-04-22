@@ -3,6 +3,9 @@ use macroquad::input::{ is_key_pressed, KeyCode };
 use crate::gamecore::game_grid::{ GameGrid, GridError };
 use std::time::{ Duration, SystemTime };
 
+const TIME_DECAY: f32 = 0.9;
+const BASE_SCORE_MULTIPLIER: usize = 3;
+
 #[derive(PartialEq, Clone, Copy)]
 pub enum Action {
     ChangeMask,
@@ -59,12 +62,13 @@ impl GameGridManager {
     fn run_game_iter(&mut self, grid: &mut GameGrid, action: Option<Action>) -> Result<(), GridError> {
 
         let score: usize = self.manage_tet_fall(grid)?;
-        self.score += score;
+        self.score += Self::scale_score(self.level, score);
 
-        if self.score / self.level > 100 { self.level_up(); } // TODO: update level change
+        if self.score / self.level > 100 { self.level_up(); }
 
         match action {
-            Some(player_action) => { self.score += self.run_action(grid, player_action)?;
+            Some(player_action) => { let action_score: usize = self.run_action(grid, player_action)?;
+                                             self.score += Self::scale_score(self.level, action_score);
                                              self.last_action = Some(player_action); }
             None => { self.last_action = None }
         }
@@ -85,6 +89,10 @@ impl GameGridManager {
             _ => self.run_game_iter(grid, None)
         }
     }
+
+    fn scale_score(level: usize, score: usize) -> usize {
+        ( (2.0 - TIME_DECAY).powf(level as f32) * score as f32 ) as usize * BASE_SCORE_MULTIPLIER
+    }    
 }
 
 
