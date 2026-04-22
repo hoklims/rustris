@@ -55,10 +55,6 @@ pub fn display_score(window :&Window, score: usize, font: &Font) {
                                                          font_scale_aspect: 1.0,
                                                          rotation: 0.0 };
 
-    println!("score area origin coords {:?}", &window.score_area_origin);
-    println!("title text coords {:?}", &score_value_coordinates);
-    println!("block_size {}", &window.block_size);
-
     draw_text_ex(&score_fmt,
                  score_value_coordinates.0,
                  score_value_coordinates.1,
