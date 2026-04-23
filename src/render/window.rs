@@ -1,7 +1,7 @@
 use crate::gamecore::game_grid::{ GRID_HEIGHT, GRID_WIDTH };
 use macroquad::window::{ screen_width, screen_height };
 
-pub const MENU_HEIGHT: i8 = 4;
+pub const MENU_HEIGHT: i8 = 3;
 pub const MENU_WIDTH: i8 = 5;
 const HW_SCREEN_RATIO: f32 = (GRID_HEIGHT + 2) as f32 / 
                              (GRID_WIDTH + MENU_WIDTH + 3) as f32;

@@ -17,7 +17,7 @@ pub enum Action {
 pub struct GameGridManager {
     pub score: usize,
     speed: Duration,
-    level: usize,
+    pub level: usize,
     last_forced_move_down: SystemTime,
     last_action: Option<Action>,
 }

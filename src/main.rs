@@ -18,7 +18,7 @@ async fn main() {
         render_background(&window);
         gamegrid_manager.get_and_apply_player_input(&mut gamegrid).unwrap();
         render_gamegrid(&gamegrid, &window);
-        display_score(&window, gamegrid_manager.score, &font);
+        display_score(&window, gamegrid_manager.score, gamegrid_manager.level, &font);
         next_frame().await
     }
 }

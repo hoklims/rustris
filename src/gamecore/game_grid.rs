@@ -127,7 +127,7 @@ impl GameGrid {
                   self.renew_current_tetromino()?;
                   Ok(self.remove_full_lines()) }
 
-        else {Ok(0)}         
+        else { Ok(0) }         
     }
 
     pub fn move_tet_left(&mut self) -> Result<(), GridError> {
@@ -171,7 +171,6 @@ impl GameGrid {
      fn remove_full_lines(&mut self) -> usize {
 
         let mut line_nb: usize = 0;
-
         let mut nb_removed_lines: usize = 0;
 
         while line_nb < GRID_HEIGHT as usize {
