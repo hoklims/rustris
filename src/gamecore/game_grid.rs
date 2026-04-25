@@ -1,6 +1,7 @@
 use crate::gamecore::tetrominos::{ Coord, Tetromino, TetrominoType, TetrominoTypeIter };
 use std::{ usize, vec::Vec };
-use macroquad::{ color::Color, rand::ChooseRandom };
+use macroquad::{ color::Color, 
+                 rand::ChooseRandom };
 use strum::IntoEnumIterator;
 use std::boxed::Box;
 
@@ -11,21 +12,17 @@ type Grid = Box<[[Option<Color>; GRID_WIDTH as usize]; GRID_HEIGHT as usize]>;
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum GridError { 
-    
     CannotAllocateNewTet, 
     ImpossibleMove, 
     TetOutsideGrid, 
     TetWentThroughFloor 
-
 }
 
 pub struct GameGrid {
-
     tetrominos: Vec<Tetromino>,
     pub current_tetromino: Tetromino,
     pub grid: Grid,
     pub tet_coord: Coord
-
 }
 
 impl GameGrid {
@@ -64,7 +61,7 @@ impl GameGrid {
     }
 
     fn fix_current_tetromino(&mut self) -> () {
-        let tet_coord = self.current_tetromino.mask.iter().map(|x: &Coord| *x + self.tet_coord);
+        let tet_coord = self.current_tetromino.mask.iter().map(|x: &Coord| *x + self.tet_coord );
         for coord in tet_coord {
             self.grid[coord.y as usize][coord.x as usize] = Some(self.current_tetromino.color);
         }
@@ -86,20 +83,20 @@ impl GameGrid {
 
     fn is_move_and_mask_legal(&self, coord_change: Coord, tet_mask: &[Coord; 4]) -> Result<bool, GridError> { 
         //checks if tetromino still fits in grid and does not collide with other boxes
-        let new_coords: [Coord; 4] = tet_mask.map(|x: Coord| x + self.tet_coord + coord_change);
+        let new_coords: [Coord; 4] = tet_mask.map(|x: Coord| x + self.tet_coord + coord_change );
         // first, check if coords are valid
 
-        if new_coords.iter().all(|x: &Coord| { Self::is_coord_in_grid(x) })
+        if new_coords.iter().all(|x: &Coord| Self::is_coord_in_grid(x) )
             // check for overlap, made in a second step to avoid converting x or y
             // to usize with negative values                                  
             { 
-              if new_coords.iter().all(|x: &Coord| { self.grid[x.y as usize][x.x as usize].is_none() })
+              if new_coords.iter().all(|x: &Coord| self.grid[x.y as usize][x.x as usize].is_none() )
                   { Ok(true) }
               else 
                   { Err(GridError::ImpossibleMove) }   
             }
 
-        else if new_coords.iter().any(|x: &Coord| { Self::went_through_floor(x) }) 
+        else if new_coords.iter().any(|x: &Coord| Self::went_through_floor(x) ) 
             { Err(GridError::TetWentThroughFloor)  }
         
         else { Err(GridError::TetOutsideGrid) }
@@ -175,7 +172,7 @@ impl GameGrid {
 
         while line_nb < GRID_HEIGHT as usize {
 
-            if !self.grid[line_nb].iter().any(|x: &Option<Color>| x.is_none()) {
+            if !self.grid[line_nb].iter().any(|x: &Option<Color>| x.is_none() ) {
                 self.remove_line(line_nb);
                 nb_removed_lines += 1;
             }

@@ -64,7 +64,7 @@ impl Tetromino {
                             current_mask_idx: 0,
                             color: CYAN,
                             mask: &MASKS_O[0],
-                            next_mask: &MASKS_O[0]}}
+                            next_mask: &MASKS_O[0] }}
 
             TetrominoType::I => { 
 
@@ -134,10 +134,10 @@ impl Tetromino {
     } 
 
     pub fn get_width(&self) -> i8 
-        { self.mask.iter().map(|x: &Coord| x.x).max().unwrap() }
+        { self.mask.iter().map(|x: &Coord| x.x ).max().unwrap() }
 
     pub fn get_height(&self) -> i8 
-        { self.mask.iter().map(|x: &Coord| x.y).max().unwrap() }
+        { self.mask.iter().map(|x: &Coord| x.y ).max().unwrap() }
 
     pub fn get_init_coord(&self) -> Coord {
         let tet_height: i8 = self.get_height();

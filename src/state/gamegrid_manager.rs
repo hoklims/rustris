@@ -82,11 +82,11 @@ impl GameGridManager {
                is_key_pressed(KeyCode::Left),
                is_key_pressed(KeyCode::Right),
                is_key_pressed(KeyCode::Down)) {
-            (true, ..) => self.run_game_iter(grid, Some(Action::ChangeMask)),
+            (true, ..)    => self.run_game_iter(grid, Some(Action::ChangeMask)),
             (_, true, ..) => self.run_game_iter(grid, Some(Action::MoveLeft)),
             (.., true, _) => self.run_game_iter(grid, Some(Action::MoveRight)),
-            (.., true) => self.run_game_iter(grid, Some(Action::Drop)),
-            _ => self.run_game_iter(grid, None)
+            (.., true)    => self.run_game_iter(grid, Some(Action::Drop)),
+             _            => self.run_game_iter(grid, None)
         }
     }
 
