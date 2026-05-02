@@ -1,5 +1,7 @@
 #!/bin/sh
+
 # script used to compile for Linux and Windows
+
 docker build -t rustris-compiler:local .
 
 docker run -u $UID:abstract -v .:/home/abstract/Projects/rustris rustris-compiler:local \
