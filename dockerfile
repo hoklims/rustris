@@ -11,7 +11,7 @@ RUN apt-get update && \
 
 ENV HOME="/home/abstract/"
 
-RUN mkdir -p $HOME/Projects
+RUN mkdir $HOME/Projects && mkdir $HOME/Projects/rustris
 
 USER abstract
 
@@ -22,9 +22,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --defau
 ENV PATH=$HOME".cargo/bin:${PATH}"
 
 RUN rustup target add x86_64-unknown-linux-gnu && \
-    rustup target add x86_64-pc-windows-gnu && \
-    rustup target add x86_64-apple-darwin
-
+    rustup target add x86_64-pc-windows-gnu
 
 
 
