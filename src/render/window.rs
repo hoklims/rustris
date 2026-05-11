@@ -12,6 +12,7 @@ pub struct Window {
     pub screen_dim: (f32, f32), // order of dim must be [height, width]
     pub display_dim: (f32, f32),
     pub display_origin: (f32, f32), // coordinates are in order (x, y), top left
+    pub buttons_area_origin: (f32, f32), 
     pub block_size: f32,
     pub score_area_origin: (f32, f32), // (x, y), top left too
     pub score_area_limit: (f32, f32)
@@ -24,17 +25,24 @@ impl Window {
         let display_dim: (f32, f32) = Self::compute_display_dim(&screen_dim);
         let display_origin: (f32, f32) = Self::compute_display_origin(&screen_dim, 
                                                                       &display_dim);
+
         let block_size: f32 = screen_dim.0 / ( (GRID_HEIGHT + 2) as f32 );
-        let score_area_origin = Self::compute_score_area_origin(block_size,
+
+        let score_area_origin: (f32, f32) = Self::compute_score_area_origin(block_size,
                                                                             &display_origin);
+
         let score_area_limit: (f32, f32) = Self::compute_score_area_limit(block_size,
                                                                           &score_area_origin);
+
+        let button_area_origin: (f32, f32) = Self::compute_buttons_area_origin(block_size, &display_origin);
+
         Window { screen_dim: screen_dim,
                  display_dim: display_dim,
                  display_origin: display_origin,
                  block_size: block_size,
                  score_area_origin: score_area_origin,
-                 score_area_limit: score_area_limit }
+                 score_area_limit: score_area_limit,
+                 buttons_area_origin: button_area_origin }
     }
 
     fn has_changed(&self) -> bool {
@@ -75,6 +83,11 @@ impl Window {
     fn compute_score_area_limit(block_size: f32, score_area_origin: &(f32, f32)) -> (f32, f32) {
         (score_area_origin.0 + (MENU_WIDTH as f32) * block_size,
          score_area_origin.1 + (MENU_HEIGHT as f32) * block_size)
+    }
+
+    fn compute_buttons_area_origin(block_size: f32, display_origin: &(f32, f32)) -> (f32, f32) {
+        (display_origin.0 + block_size * (GRID_WIDTH + 1) as f32,
+         display_origin.1 + block_size * (MENU_HEIGHT + 7) as f32)
     }
 
     pub fn refresh_window_if_needed(&mut self) -> () {
