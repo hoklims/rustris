@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 use std::time::SystemTime;
 
 use macroquad::{ prelude::BLACK, 
@@ -11,7 +12,8 @@ use crate::{ gamecore::game_grid::GameGrid,
              render::{ background_rendering::render_background, 
                        gamegrid_rendering::render_gamegrid, 
                        score_rendering::display_score, 
-                       window::Window },
+                       window::Window,
+                       buttons::ButtonRenderer },
              state::gamegrid_manager::GameGridManager };
 
 const FONT_FILE: &[u8] = include_bytes!("../assets/square_sans_serif_7.ttf");
@@ -24,12 +26,14 @@ async fn main() {
     let mut window: Window = Window::new();
     let mut gamegrid: GameGrid = GameGrid::new();
     let mut gamegrid_manager: GameGridManager = GameGridManager::new();
+    let button_renderer: ButtonRenderer = ButtonRenderer::new(&font);
 
     loop {
         
         window.refresh_window_if_needed();
         clear_background(BLACK);
         render_background(&window);
+        button_renderer.render_buttons(&window);
         gamegrid_manager.get_and_apply_player_input(&mut gamegrid).unwrap();
         render_gamegrid(&gamegrid, &window);
         display_score(&window, gamegrid_manager.score, gamegrid_manager.level, &font);
