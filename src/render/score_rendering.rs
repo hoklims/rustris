@@ -1,7 +1,7 @@
 use macroquad::{ color::YELLOW, 
                  text::{ Font, TextDimensions, TextParams, draw_text_ex, measure_text }};
 
-use crate::render::window::Window;
+use crate::render::window::{MENU_WIDTH, Window};
 
 pub fn display_score(window :&Window, score: usize, level: usize, font: &Font) {
 
@@ -13,7 +13,7 @@ pub fn display_score(window :&Window, score: usize, level: usize, font: &Font) {
                                                   title_font_size,
                                                   1.0);
     
-    let menu_area_width: f32 = window.score_area_limit.0 - window.score_area_origin.0;
+    let menu_area_width: f32 = MENU_WIDTH as f32 * window.block_size;
 
     let score_title_x_offset: f32 = (menu_area_width - title_size.width) / 2.0 ;
     let score_title_y_offset: f32 = window.block_size - title_size.height / 2.0;
