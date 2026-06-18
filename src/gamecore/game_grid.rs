@@ -12,10 +12,10 @@ type Grid = Box<[[Option<Color>; GRID_WIDTH as usize]; GRID_HEIGHT as usize]>;
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum GridError { 
-    CannotAllocateNewTet, 
-    ImpossibleMove, 
-    TetOutsideGrid, 
-    TetWentThroughFloor 
+    CannotAllocateNewTet,
+    ImpossibleMove,
+    TetOutsideGrid,
+    TetWentThroughFloor
 }
 
 pub struct GameGrid {
@@ -88,8 +88,8 @@ impl GameGrid {
 
         if new_coords.iter().all(|x: &Coord| Self::is_coord_in_grid(x) )
             // check for overlap, made in a second step to avoid converting x or y
-            // to usize with negative values                                  
-            { 
+            // to usize with negative values
+            {
               if new_coords.iter().all(|x: &Coord| self.grid[x.y as usize][x.x as usize].is_none() )
                   { Ok(true) }
               else 
