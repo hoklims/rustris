@@ -15,7 +15,6 @@ pub struct Window {
     pub buttons_area_origin: (f32, f32), 
     pub block_size: f32,
     pub score_area_origin: (f32, f32), // (x, y), top left too
-    pub score_area_limit: (f32, f32)
 }
 
 impl Window {
@@ -31,9 +30,6 @@ impl Window {
         let score_area_origin: (f32, f32) = Self::compute_score_area_origin(block_size,
                                                                             &display_origin);
 
-        let score_area_limit: (f32, f32) = Self::compute_score_area_limit(block_size,
-                                                                          &score_area_origin);
-
         let button_area_origin: (f32, f32) = Self::compute_buttons_area_origin(block_size, &display_origin);
 
         Window { screen_dim: screen_dim,
@@ -41,7 +37,6 @@ impl Window {
                  display_origin: display_origin,
                  block_size: block_size,
                  score_area_origin: score_area_origin,
-                 score_area_limit: score_area_limit,
                  buttons_area_origin: button_area_origin }
     }
 
@@ -80,13 +75,8 @@ impl Window {
          block_size + display_origin.1)
     }
 
-    fn compute_score_area_limit(block_size: f32, score_area_origin: &(f32, f32)) -> (f32, f32) {
-        (score_area_origin.0 + (MENU_WIDTH as f32) * block_size,
-         score_area_origin.1 + (MENU_HEIGHT as f32) * block_size)
-    }
-
     fn compute_buttons_area_origin(block_size: f32, display_origin: &(f32, f32)) -> (f32, f32) {
-        (display_origin.0 + block_size * (GRID_WIDTH + 1) as f32,
+        (display_origin.0 + block_size * (GRID_WIDTH + 2) as f32,
          display_origin.1 + block_size * (MENU_HEIGHT + 7) as f32)
     }
 
@@ -104,8 +94,9 @@ impl Window {
             self.score_area_origin = Self::compute_score_area_origin(self.block_size,
                                                                      &self.display_origin);
 
-            self.score_area_limit = Self::compute_score_area_limit(self.block_size,
-                                                                   &self.score_area_origin);
+            self.buttons_area_origin = Self::compute_buttons_area_origin(self.block_size,
+                                                                         &self.display_origin);
+
         }
     }
 }
