@@ -1,6 +1,6 @@
-use macroquad::input::{ is_key_pressed, KeyCode };
+use macroquad::input::{ KeyCode, is_key_pressed };
 
-use crate::gamecore::game_grid::{ GameGrid, GridError };
+use crate::{ gamecore::game_grid::{ GameGrid, GridError }, render::buttons::UIAction };
 use std::time::{ Duration, SystemTime };
 
 const TIME_DECAY: f32 = 0.9;
@@ -88,6 +88,20 @@ impl GameGridManager {
             (.., true)    => self.run_game_iter(grid, Some(Action::Drop)),
              _            => self.run_game_iter(grid, None)
         }
+    }
+
+    pub fn apply_ui_input(&mut self, 
+                          grid: &mut GameGrid, 
+                          action: Option<UIAction>) -> Result<(), GridError> {
+
+        match action {
+            Some(UIAction::Up)    => self.run_game_iter(grid, Some(Action::ChangeMask)),
+            Some(UIAction::Right) => self.run_game_iter(grid, Some(Action::MoveRight)),
+            Some(UIAction::Left)  => self.run_game_iter(grid, Some(Action::MoveLeft)),
+            Some(UIAction::Down)  => self.run_game_iter(grid, Some(Action::Drop)),
+            None                  => self.run_game_iter(grid, None)
+        }
+
     }
 
     fn scale_score(level: usize, score: usize) -> usize {
