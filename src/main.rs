@@ -9,11 +9,10 @@ mod state;
 mod render;
 use crate::{ gamecore::game_grid::GameGrid, 
              render::{ background_rendering::render_background, 
+                       buttons::{ ButtonRenderer, UIAction }, 
                        gamegrid_rendering::render_gamegrid, 
-                       score_rendering::display_score, 
-                       window::Window,
-                       buttons::ButtonRenderer },
-             state::gamegrid_manager::GameGridManager };
+                       score_rendering::display_score, window::Window },
+                       state::gamegrid_manager::GameGridManager };
 
 const FONT_SCORE: &[u8] = include_bytes!("../assets/square_sans_serif_7.ttf");
 
@@ -40,7 +39,8 @@ async fn main() {
         window.refresh_window_if_needed();
         clear_background(BLACK);
         render_background(&window);
-        button_renderer.render_buttons(&window);
+        let ui_action: Option<UIAction> = button_renderer.render_buttons(&window);
+        gamegrid_manager.apply_ui_input(&mut gamegrid, ui_action).unwrap();
         gamegrid_manager.get_and_apply_player_input(&mut gamegrid).unwrap();
         render_gamegrid(&gamegrid, &window);
         display_score(&window, gamegrid_manager.score, gamegrid_manager.level, &font_score);
