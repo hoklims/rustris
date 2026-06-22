@@ -70,40 +70,44 @@ impl ButtonRenderer {
         let down_button_position: Vec2 = vec2(2.0 * window.block_size, 4.0 * window.block_size);
         let left_button_position: Vec2 = vec2(0.0, 2.0 * window.block_size);
 
-        root_ui().push_skin(&self.button_skin);
-        
         let mut result: Option<UIAction> = None;
 
-        root_ui().window(hash!(), button_window_position, window_size, |ui: &mut Ui | {
+        if cfg!(target_arch = "aarch64") {
+        
+            root_ui().push_skin(&self.button_skin);
 
-            if widgets::Button::new(self.up_button_texture.clone())
-                .position(up_button_position)
-                .size(button_size)
-                .ui(ui)
-                    { result = Some(UIAction::Up); }
+            root_ui().window(hash!(), button_window_position, window_size, |ui: &mut Ui | {
 
-            if widgets::Button::new(self.right_button_texture.clone())
-                .position(right_button_position)
-                .size(button_size)
-                .ui(ui)
-                    { result = Some(UIAction::Right); }
+                if widgets::Button::new(self.up_button_texture.clone())
+                    .position(up_button_position)
+                    .size(button_size)
+                    .ui(ui)
+                        { result = Some(UIAction::Up); }
+
+                if widgets::Button::new(self.right_button_texture.clone())
+                    .position(right_button_position)
+                    .size(button_size)
+                    .ui(ui)
+                        { result = Some(UIAction::Right); }
 
 
-            if widgets::Button::new(self.down_button_texture.clone())
-                .position(down_button_position)
-                .size(button_size)
-                .ui(ui)
-                    { result = Some(UIAction::Down); }
+                if widgets::Button::new(self.down_button_texture.clone())
+                    .position(down_button_position)
+                    .size(button_size)
+                    .ui(ui)
+                        { result = Some(UIAction::Down); }
 
-            if widgets::Button::new(self.left_button_texture.clone())
-                .position(left_button_position)
-                .size(button_size)
-                .ui(ui)
-                    { result = Some(UIAction::Left); }
-                     
-        });
+                if widgets::Button::new(self.left_button_texture.clone())
+                    .position(left_button_position)
+                    .size(button_size)
+                    .ui(ui)
+                        { result = Some(UIAction::Left); }
+                        
+            });
 
-        root_ui().pop_skin();
+            root_ui().pop_skin();
+
+        }
 
         result
     }
