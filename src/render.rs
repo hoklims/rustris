@@ -1,4 +1,5 @@
 pub mod window;
+pub mod game_over;
 pub mod block_rendering;
 pub mod background_rendering;
 pub mod gamegrid_rendering;
