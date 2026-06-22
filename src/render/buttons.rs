@@ -72,7 +72,7 @@ impl ButtonRenderer {
 
         let mut result: Option<UIAction> = None;
 
-        if cfg!(target_arch = "aarch64") {
+        if cfg!(target_arch = "arm") {
         
             root_ui().push_skin(&self.button_skin);
 
