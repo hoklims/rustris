@@ -17,7 +17,7 @@ USER abstract
 
 WORKDIR $HOME 
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.93.0 -y
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.96.0 -y
 
 ENV PATH=$HOME".cargo/bin:${PATH}"
 
