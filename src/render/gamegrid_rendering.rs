@@ -1,3 +1,5 @@
+use std::ops::Not;
+
 use macroquad::color::BLACK;
 
 use crate::gamecore::game_grid::{ GRID_HEIGHT, GRID_WIDTH, GameGrid };
@@ -26,12 +28,20 @@ pub fn render_gamegrid(gamegrid: &GameGrid, window: &Window) -> () {
     }
 
     // rendering tetromino
-    for coord in gamegrid.current_tetromino.mask
-                            .map(|x: Coord| {x + gamegrid.tet_coord}) {
-        let mq_coord: (f32, f32) = 
-            ( coord.x as f32 * window.block_size + gamegrid_display_origin.0,
-             (GRID_HEIGHT - coord.y - 1) as f32 * window.block_size + gamegrid_display_origin.1 );
-        render_block(&mq_coord, gamegrid.current_tetromino.color, window, false)    
+    if gamegrid.current_tetromino.is_none().not() {
+        for coord in gamegrid.current_tetromino.unwrap().mask
+                                .map(|x: Coord| {x + gamegrid.tet_coord}) {
+            
+            let mq_coord: (f32, f32) = 
+                ( coord.x as f32 * window.block_size + gamegrid_display_origin.0,
+                (GRID_HEIGHT - coord.y - 1) as f32 * window.block_size + gamegrid_display_origin.1 );
+            
+            render_block(
+                &mq_coord, 
+                gamegrid.current_tetromino.unwrap().color, 
+                window, 
+                false)    
+        }
     }
 
 }
