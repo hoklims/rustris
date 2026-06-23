@@ -5,7 +5,7 @@ use crate::render::window::Window;
 
 pub fn display_game_over(window: &Window, font: &Font) -> () {
     
-    let game_over_font_size: u16 = window.block_size as u16 * 4 ;
+    let game_over_font_size: u16 = window.block_size as u16 * 2 ;
     let game_over_text_size: TextDimensions = measure_text(
         "GAME OVER", 
         Some(font), 
@@ -42,7 +42,7 @@ pub fn display_game_over(window: &Window, font: &Font) -> () {
             { "PRESS ANY ARROW KEY TO CONTINUE" }
     };
 
-    let additional_text_font_size: u16 = window.block_size as u16 * 2;
+    let additional_text_font_size: u16 = window.block_size as u16 / 3 * 2;
 
     let additional_text_size: TextDimensions = measure_text(
         additional_text, 
