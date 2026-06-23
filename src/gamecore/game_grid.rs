@@ -20,7 +20,7 @@ pub enum GridError {
 
 pub struct GameGrid {
     tetrominos: Vec<Tetromino>,
-    pub current_tetromino: Tetromino,
+    pub current_tetromino: Option<Tetromino>,
     pub grid: Grid,
     pub tet_coord: Coord
 }
@@ -43,27 +43,28 @@ impl GameGrid {
 
         GameGrid { 
             tetrominos: tetrominos_vec,
-            current_tetromino: starting_tet,
+            current_tetromino: Some(starting_tet),
             grid: grid,
             tet_coord: tet_init_coord
         }
     }
 
     pub fn renew_current_tetromino(&mut self) -> Result<(), GridError> {
-        self.current_tetromino = self.tetrominos.choose().unwrap().clone();
-        self.tet_coord = self.current_tetromino.get_init_coord();
+        self.current_tetromino = Some(self.tetrominos.choose().unwrap().clone());
+        self.tet_coord = self.current_tetromino.unwrap().get_init_coord();
         
         if let Err(_) = self.is_move_and_mask_legal(Coord { x: 0, y: 0 },
-                                                    &self.current_tetromino.mask)
-            { Err(GridError::CannotAllocateNewTet) }
+                                                    &self.current_tetromino.unwrap().mask)
+            { self.current_tetromino = None; Err(GridError::CannotAllocateNewTet) }
 
         else { Ok(()) }
     }
 
     fn fix_current_tetromino(&mut self) -> () {
-        let tet_coord = self.current_tetromino.mask.iter().map(|x: &Coord| *x + self.tet_coord );
+        let tet_coord = self.current_tetromino.unwrap().mask.iter()
+                                                        .map(|x: &Coord| *x + self.tet_coord );
         for coord in tet_coord {
-            self.grid[coord.y as usize][coord.x as usize] = Some(self.current_tetromino.color);
+            self.grid[coord.y as usize][coord.x as usize] = Some(self.current_tetromino.unwrap().color);
         }
     }
 
@@ -104,8 +105,10 @@ impl GameGrid {
 
     fn move_tet(&mut self, coord_change: Coord) -> Result<(), GridError> {
 
-        let is_legal_res: Result<bool, GridError> = self.is_move_and_mask_legal(coord_change,
-                                                                                &self.current_tetromino.mask);
+        let is_legal_res: Result<bool, GridError> = self.is_move_and_mask_legal(
+            coord_change,
+            &self.current_tetromino.unwrap().mask);
+
         match is_legal_res {
             Ok(res) if res => { self.tet_coord += coord_change; Ok(()) },
             Ok(res) if !res => Ok(()),
@@ -116,6 +119,8 @@ impl GameGrid {
     }
 
     pub fn move_tet_down(&mut self) -> Result<usize, GridError> {
+
+        if self.current_tetromino.is_none()  { return Ok(0); }
 
         let move_result: Result<(), GridError> = self.move_tet(Coord { x: 0, y: -1 });
         if let Err(error) = move_result && 
@@ -128,6 +133,9 @@ impl GameGrid {
     }
 
     pub fn move_tet_left(&mut self) -> Result<(), GridError> {
+
+        if self.current_tetromino.is_none()  { return Ok(()); }
+
         let move_result: Result<(), GridError> = self.move_tet(Coord { x: -1, y: 0 });
         match move_result {
             Err(result) => { if result == GridError::ImpossibleMove ||
@@ -138,6 +146,9 @@ impl GameGrid {
     }
 
     pub fn move_tet_right(&mut self) -> Result<(), GridError> {
+
+        if self.current_tetromino.is_none()  { return Ok(()); }
+
         let move_result: Result<(), GridError> = self.move_tet(Coord { x: 1, y: 0 });
         match move_result {
             Err(result) => { if result == GridError::ImpossibleMove ||
@@ -148,13 +159,16 @@ impl GameGrid {
     }
 
     fn can_tet_change(&self) -> Result<bool, GridError> {
+
+        if self.current_tetromino.is_none() { return Ok(false); }
+        
         self.is_move_and_mask_legal(Coord { x: 0, y: 0 }, 
-                                    &self.current_tetromino.next_mask)
+                                    &self.current_tetromino.unwrap().next_mask)
     }
 
     pub fn update_tet_mask(&mut self) -> Result<(), GridError> {
         if let Ok(possible) = self.can_tet_change() && possible 
-            { self.current_tetromino.update_mask_and_next_one(); }
+            { self.current_tetromino.unwrap().update_mask_and_next_one(); }
         Ok(())
     }
 
@@ -183,12 +197,15 @@ impl GameGrid {
 
     pub fn dump_tet(&mut self) -> Result<usize, GridError> {
 
+        if self.current_tetromino.is_none() { return Ok(0); }
+
         let mut max_possible_down_move: Coord = Coord { x: 0, y: 0 };
 
         loop { 
             let new_coord: Coord = max_possible_down_move + Coord{ x: 0, y: -1 };
-            if let Ok(is_legal) = self.is_move_and_mask_legal(new_coord, 
-                                                                    self.current_tetromino.mask)
+            if let Ok(is_legal) = self.is_move_and_mask_legal(
+                    new_coord, 
+                    self.current_tetromino.unwrap().mask)
                 && is_legal
                 { max_possible_down_move = new_coord; }
             else { break; }
