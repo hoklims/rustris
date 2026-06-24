@@ -51,20 +51,20 @@ impl GameGrid {
 
     pub fn renew_current_tetromino(&mut self) -> Result<(), GridError> {
         self.current_tetromino = Some(self.tetrominos.choose().unwrap().clone());
-        self.tet_coord = self.current_tetromino.unwrap().get_init_coord();
+        self.tet_coord = self.current_tetromino.as_ref().unwrap().get_init_coord();
         
         if let Err(_) = self.is_move_and_mask_legal(Coord { x: 0, y: 0 },
-                                                    &self.current_tetromino.unwrap().mask)
+                                                    &self.current_tetromino.as_ref().unwrap().mask)
             { self.current_tetromino = None; Err(GridError::CannotAllocateNewTet) }
 
         else { Ok(()) }
     }
 
     fn fix_current_tetromino(&mut self) -> () {
-        let tet_coord = self.current_tetromino.unwrap().mask.iter()
+        let tet_coord = self.current_tetromino.as_ref().unwrap().mask.iter()
                                                         .map(|x: &Coord| *x + self.tet_coord );
         for coord in tet_coord {
-            self.grid[coord.y as usize][coord.x as usize] = Some(self.current_tetromino.unwrap().color);
+            self.grid[coord.y as usize][coord.x as usize] = Some(self.current_tetromino.as_ref().unwrap().color);
         }
     }
 
@@ -82,7 +82,8 @@ impl GameGrid {
         }
     } 
 
-    fn is_move_and_mask_legal(&self, coord_change: Coord, tet_mask: &[Coord; 4]) -> Result<bool, GridError> { 
+    fn is_move_and_mask_legal(&self, coord_change: Coord, 
+                              tet_mask: &[Coord; 4]) -> Result<bool, GridError> { 
         //checks if tetromino still fits in grid and does not collide with other boxes
         let new_coords: [Coord; 4] = tet_mask.map(|x: Coord| x + self.tet_coord + coord_change );
         // first, check if coords are valid
@@ -107,7 +108,7 @@ impl GameGrid {
 
         let is_legal_res: Result<bool, GridError> = self.is_move_and_mask_legal(
             coord_change,
-            &self.current_tetromino.unwrap().mask);
+            &self.current_tetromino.as_ref().unwrap().mask);
 
         match is_legal_res {
             Ok(res) if res => { self.tet_coord += coord_change; Ok(()) },
@@ -162,13 +163,16 @@ impl GameGrid {
 
         if self.current_tetromino.is_none() { return Ok(false); }
         
-        self.is_move_and_mask_legal(Coord { x: 0, y: 0 }, 
-                                    &self.current_tetromino.unwrap().next_mask)
+        self.is_move_and_mask_legal(
+            Coord { x: 0, y: 0 }, 
+            &self.current_tetromino.as_ref().unwrap().next_mask
+        )
     }
 
     pub fn update_tet_mask(&mut self) -> Result<(), GridError> {
         if let Ok(possible) = self.can_tet_change() && possible 
-            { self.current_tetromino.unwrap().update_mask_and_next_one(); }
+            { self.current_tetromino.as_mut().unwrap().update_mask_and_next_one(); }
+
         Ok(())
     }
 
@@ -205,7 +209,7 @@ impl GameGrid {
             let new_coord: Coord = max_possible_down_move + Coord{ x: 0, y: -1 };
             if let Ok(is_legal) = self.is_move_and_mask_legal(
                     new_coord, 
-                    self.current_tetromino.unwrap().mask)
+                    self.current_tetromino.as_ref().unwrap().mask)
                 && is_legal
                 { max_possible_down_move = new_coord; }
             else { break; }
