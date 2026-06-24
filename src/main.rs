@@ -57,36 +57,37 @@ async fn main() {
         
         match (ui_action_result, key_action_result, &gamegrid.current_tetromino) {
 
+            (.., None) |
             (Err(GridError::CannotAllocateNewTet), ..) |
-            (_, Err(GridError::CannotAllocateNewTet), _) |
-            (.., None) => { display_game_over(&window, &font);
+            (_, Err(GridError::CannotAllocateNewTet), _) => { 
+                
+                display_game_over(&window, &font);
 
+                if game_over_time.is_none() {
+                    game_over_time = Some(Instant::now());
+                }
 
+                let any_key_pressed: bool = [is_key_pressed(KeyCode::Up),
+                                             is_key_pressed(KeyCode::Right),
+                                             is_key_pressed(KeyCode::Down),
+                                             is_key_pressed(KeyCode::Left)].iter().any(|x| *x);
 
-                            if game_over_time.is_none() {
-                                game_over_time = Some(Instant::now());
-                            }
+                if any_key_pressed && game_over_time.unwrap().elapsed() > Duration::from_secs(3) {
 
-                            if  (is_key_pressed(KeyCode::Up) ||
-                                 is_key_pressed(KeyCode::Right) ||
-                                 is_key_pressed(KeyCode::Down) ||
-                                 is_key_pressed(KeyCode::Left)) 
-                              && game_over_time.unwrap().elapsed() > Duration::from_secs(3) {
+                        gamegrid = GameGrid::new();
+                        gamegrid_manager = GameGridManager::new();
+                        game_over_time = None;
 
-                                    gamegrid = GameGrid::new();
-                                    gamegrid_manager = GameGridManager::new();
-                                    game_over_time = None;
-                                    
-                               }
+                    }
 
-                            next_frame().await; },
+                next_frame().await; 
+            },
 
             (Err(error), ..) => panic!("ui returned {error:?}"),
             (_, Err(error), _) => panic!("key returned {error:?}"),
              _ => next_frame().await 
 
         }   
-        
 
     }
 
