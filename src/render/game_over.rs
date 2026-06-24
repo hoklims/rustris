@@ -36,7 +36,7 @@ pub fn display_game_over(window: &Window, font: &Font) -> () {
     );
 
     let additional_text: &str = {
-        if cfg!(target_arch = "arm") 
+        if cfg!(target_arch = "arm") | cfg!(target_arch = "aarch64") 
             { "TOUCH ANY BUTTON TO CONTINUE" }
         else 
             { "PRESS ANY ARROW KEY TO CONTINUE" }
