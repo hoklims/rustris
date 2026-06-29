@@ -4,6 +4,18 @@ version = "0.9.0"
 edition = "2024"
 authors = ["https://github.com/JbFoncin"]
 
+# Android packaging config, read by `cargo-quad-apk` when building the APK.
+# Without this section the tool falls back to building three ABIs
+# (armv7 + aarch64 + i686) and aborts on the first Rust target that is not
+# installed. Declaring the ABIs explicitly keeps the APK build reproducible.
+[package.metadata.android]
+# aarch64 covers all modern 64-bit Android devices. To widen coverage, add
+# "armv7-linux-androideabi" (older 32-bit phones) and/or "x86_64-linux-android"
+# (emulators), and install the matching target with `rustup target add <triple>`.
+build_targets = ["aarch64-linux-android"]
+# On-device app name (defaults to the lowercase crate name otherwise).
+label = "Rustris"
+
 [dependencies]
 macroquad = "0.4.14"
 strum = "0.28.0"
