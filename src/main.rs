@@ -48,6 +48,7 @@ async fn main() {
         clear_background(BLACK);
         render_background(&window);
         let ui_action: Option<UIAction> = button_renderer.render_buttons(&window);
+        let ui_button_pressed: bool = ui_action.is_some();
         let ui_action_result: Result<(), GridError> = gamegrid_manager.apply_ui_input(&mut gamegrid, 
                                                                                       ui_action);
         let key_action_result: Result<(), GridError> = gamegrid_manager.get_and_apply_player_input(&mut gamegrid);
@@ -72,7 +73,8 @@ async fn main() {
                                              is_key_pressed(KeyCode::Down),
                                              is_key_pressed(KeyCode::Left)].iter().any(|x| *x);
 
-                if any_key_pressed && game_over_time.unwrap().elapsed() > Duration::from_secs(3) {
+                if (any_key_pressed || ui_button_pressed) &&
+                   game_over_time.unwrap().elapsed() > Duration::from_secs(3) {
 
                         gamegrid = GameGrid::new();
                         gamegrid_manager = GameGridManager::new();

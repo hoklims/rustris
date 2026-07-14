@@ -72,11 +72,14 @@ impl ButtonRenderer {
 
         let mut result: Option<UIAction> = None;
 
-        if cfg!(target_arch = "arm") {
+        if cfg!(target_os = "android") {
         
             root_ui().push_skin(&self.button_skin);
 
-            root_ui().window(hash!(), button_window_position, window_size, |ui: &mut Ui | {
+            widgets::Window::new(hash!(), button_window_position, window_size)
+                .movable(false)
+                .titlebar(false)
+                .ui(&mut root_ui(), |ui: &mut Ui | {
 
                 if widgets::Button::new(self.up_button_texture.clone())
                     .position(up_button_position)
@@ -103,7 +106,7 @@ impl ButtonRenderer {
                     .ui(ui)
                         { result = Some(UIAction::Left); }
                         
-            });
+                });
 
             root_ui().pop_skin();
 

@@ -12,7 +12,7 @@ authors = ["https://github.com/JbFoncin"]
 # aarch64 covers all modern 64-bit Android devices. To widen coverage, add
 # "armv7-linux-androideabi" (older 32-bit phones) and/or "x86_64-linux-android"
 # (emulators), and install the matching target with `rustup target add <triple>`.
-build_targets = ["aarch64-linux-android"]
+build_targets = ["aarch64-linux-android", "x86_64-linux-android"]
 # On-device app name (defaults to the lowercase crate name otherwise).
 label = "Rustris"
 

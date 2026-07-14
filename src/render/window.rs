@@ -3,8 +3,6 @@ use macroquad::window::{ screen_width, screen_height };
 
 pub const MENU_HEIGHT: i8 = 3;
 pub const MENU_WIDTH: i8 = 5;
-const HW_SCREEN_RATIO: f32 = (GRID_HEIGHT + 2) as f32 / 
-                             (GRID_WIDTH + MENU_WIDTH + 3) as f32;
 
 pub const HWSCREEN_DIM_BLOCKS: (i8, i8) = (GRID_HEIGHT + 2, GRID_WIDTH + MENU_WIDTH + 3) ;
 
@@ -25,7 +23,7 @@ impl Window {
         let display_origin: (f32, f32) = Self::compute_display_origin(&screen_dim, 
                                                                       &display_dim);
 
-        let block_size: f32 = screen_dim.0 / ( (GRID_HEIGHT + 2) as f32 );
+        let block_size: f32 = Self::compute_block_size(&screen_dim);
 
         let score_area_origin: (f32, f32) = Self::compute_score_area_origin(block_size,
                                                                             &display_origin);
@@ -45,16 +43,15 @@ impl Window {
     }
 
     fn compute_display_dim(screen_dim: &(f32, f32)) -> (f32, f32) {
-        //compute usable display size while respecting window hw ratio
-        let (width, height) = screen_dim.clone();
+        let block_size: f32 = Self::compute_block_size(screen_dim);
+        (block_size * HWSCREEN_DIM_BLOCKS.0 as f32,
+         block_size * HWSCREEN_DIM_BLOCKS.1 as f32)
+    }
 
-        if width * HW_SCREEN_RATIO > height { // screen too thin
-            (width * HW_SCREEN_RATIO, width)
-        }
-        else if height / HW_SCREEN_RATIO < width { // screen too wide
-            (height / HW_SCREEN_RATIO, width)
-        }
-        else { (height, width) } // window has right size, can use all area
+    fn compute_block_size(screen_dim: &(f32, f32)) -> f32 {
+        let height_limited: f32 = screen_dim.0 / HWSCREEN_DIM_BLOCKS.0 as f32;
+        let width_limited: f32 = screen_dim.1 / HWSCREEN_DIM_BLOCKS.1 as f32;
+        height_limited.min(width_limited)
     }
 
     fn compute_display_origin(window_size: &(f32, f32), display_dim: &(f32, f32)) -> (f32, f32) {
@@ -89,7 +86,7 @@ impl Window {
             self.display_origin = Self::compute_display_origin(&self.screen_dim, 
                                                                &self.display_dim);
 
-            self.block_size = self.screen_dim.0 / ( (GRID_HEIGHT + 2) as f32 );
+            self.block_size = Self::compute_block_size(&self.screen_dim);
 
             self.score_area_origin = Self::compute_score_area_origin(self.block_size,
                                                                      &self.display_origin);
@@ -98,6 +95,41 @@ impl Window {
                                                                          &self.display_origin);
 
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Window;
+
+    fn assert_close(actual: f32, expected: f32) {
+        assert!((actual - expected).abs() < 0.01, "{actual} != {expected}");
+    }
+
+    #[test]
+    fn portrait_layout_fits_the_full_game_width() {
+        let screen: (f32, f32) = (2340.0, 1080.0);
+        let block_size: f32 = Window::compute_block_size(&screen);
+        let display: (f32, f32) = Window::compute_display_dim(&screen);
+        let origin: (f32, f32) = Window::compute_display_origin(&screen, &display);
+
+        assert_close(block_size, 60.0);
+        assert_eq!(display, (1320.0, 1080.0));
+        assert_eq!(origin, (0.0, 510.0));
+    }
+
+    #[test]
+    fn landscape_layout_fits_the_full_game_height() {
+        let screen: (f32, f32) = (1080.0, 2340.0);
+        let block_size: f32 = Window::compute_block_size(&screen);
+        let display: (f32, f32) = Window::compute_display_dim(&screen);
+        let origin: (f32, f32) = Window::compute_display_origin(&screen, &display);
+
+        assert_close(block_size, 1080.0 / 22.0);
+        assert_close(display.0, 1080.0);
+        assert_close(display.1, 1080.0 / 22.0 * 18.0);
+        assert_close(origin.0, (2340.0 - display.1) / 2.0);
+        assert_close(origin.1, 0.0);
     }
 }
 
